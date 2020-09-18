@@ -17,7 +17,7 @@ let appSetting = {
     },
     dashboard: { name: "UserManager" },
     ueditor: {
-        serverUrl: "http://item.ricebird.cn/ueditor/process",
+        serverUrl: process.env.NODE_ENV === "production" ? "http://unify.xmu.edu.cn/ueditor/process" : "http://item.ricebird.cn/ueditor/process",
         topOffset: 64,
         zIndex: 9,
         UEDITOR_HOME_URL: process.env.NODE_ENV === "production" ? "/web/third/" : "/static/"

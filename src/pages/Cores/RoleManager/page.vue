@@ -92,7 +92,6 @@ export default {
             })
         },
         addRole () {
-            debugger
             this.$Modal.confirm({
                 render: (h) => {
                     return h('Input', {
