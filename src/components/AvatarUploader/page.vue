@@ -209,6 +209,7 @@ export default {
         width: 0px;
         height: 0px;
         position: absolute;
+        overflow: hidden;
     }
 }
 </style>

@@ -2,9 +2,9 @@
     <i-row id="building-manager" :gutter="16">
         <i-col span="5" class="tree">
             <i-row class="user-search">
-                <i-input prefix="ios-search" placeholder="搜索楼栋" />
+                <i-input style="margin-left: 28px" prefix="ios-search" placeholder="搜索楼栋" />
                 <div class="more-btn" @click="modifyBuilding()">
-                    <i-tooltip content="添加部门" placement="right">
+                    <i-tooltip content="添加楼栋" placement="right">
                         <Icon type="md-add" />
                     </i-tooltip>
                 </div>
@@ -14,11 +14,11 @@
         <i-col span="19">
             <i-card class="panel">
                 <p slot="title">{{dataName}} 实验室列表</p>
-                <i-row style="margin-bottom: 8px;" type="flex" align="middle">
-                    <i-col span="3">
+                <i-row style="margin-bottom: 8px;" type="flex" align="middle" :gutter="16">
+                    <i-col>
                         <i-button @click="toLabDetail()" size="large" type="primary">添加实验室</i-button>
                     </i-col>
-                    <i-col span="11" offset="1">
+                    <i-col span="11">
                         <i-input prefix="ios-search" size="large" placeholder="搜索实验室名称" v-model="keyword" @keyup.enter.native="GetLabData" />
                     </i-col>
                     <i-col span="3">

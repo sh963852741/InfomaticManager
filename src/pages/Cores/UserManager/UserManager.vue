@@ -3,12 +3,13 @@
         <Row type="flex">
             <i-col class="tree">
                 <div class="user-search">
-                    <Input prefix="ios-search" placeholder="搜索成员，部门" />
+                    <i-button long @click="addDepart" ghost icon="md-add">添加部门</i-button>
+                    <!-- <Input prefix="ios-search" placeholder="搜索成员，部门" />
                     <div class="more-btn" @click="addDepart">
                         <Tooltip content="添加部门" placement="right">
                             <Icon type="md-add" />
                         </Tooltip>
-                    </div>
+                    </div> -->
                 </div>
                 <Tree :data="orgTree" class="org-tree" :render="renderOrgTree" :empty-text="emptyText" :load-data="getChildTree"></Tree>
             </i-col>
@@ -16,8 +17,14 @@
                 <div class="header">
                     <span>{{depart}}（{{totalUsers}}人）</span>
                 </div>
-                <Button @click="showUserDetail('')" v-if="permissions.add">添加成员</Button>
-                <!-- <Button>删除成员</Button> -->
+                <i-row type="flex" :gutter="16">
+                    <i-col>
+                        <Button @click="showUserDetail('')" v-if="permissions.add">添加成员</Button>
+                    </i-col>
+                    <i-col>
+                        <i-input search v-model="userName" @on-enter="getUsers()" placeholder="搜索成员" />
+                    </i-col>
+                </i-row>
                 <Table :loading="isLoadingUser" stripe :columns="columns1" :data="userData" class="user-table" width="100%">
                     <template slot="isBind" slot-scope="{row}">
                         <template v-if="row.OpenId">
@@ -243,7 +250,7 @@ export default {
             this.isLoadingUser = true;
             this.showTab = "user";
             this.page = page || this.page;
-            axios.post("/api/security/GetUsers", { departId: this.departId, isAll: this.isAll, page: this.page, pageSize: this.pageSize }, msg => {
+            axios.post("/api/security/GetUsers", {departId: this.departId, isAll: this.isAll, page: this.page, pageSize: this.pageSize, name: this.userName}, msg => {
                 this.isLoadingUser = false;
                 if (msg.success) {
                     this.totalUsers = msg.totalRow;
@@ -277,7 +284,8 @@ export default {
             columns1: [
                 {
                     title: '姓名',
-                    key: 'RealName'
+                    key: 'RealName',
+                    maxWidth: 150
                 },
                 {
                     title: '部门',
@@ -285,15 +293,18 @@ export default {
                 },
                 {
                     title: '学/工号',
-                    key: 'Code'
+                    key: 'Code',
+                    maxWidth: 180
                 },
                 {
                     title: '手机',
-                    key: 'Mobile'
+                    key: 'Mobile',
+                    maxWidth: 180
                 },
                 {
                     title: "是否绑定微信",
-                    slot: "isBind"
+                    slot: "isBind",
+                    maxWidth: 160
                 },
                 {
                     title: '操作',
@@ -320,11 +331,13 @@ export default {
                             }
                         }, "[删除]"));
                         return h("div", [...operate])
-                    }
+                    },
+                    maxWidth: 160
                 }
             ],
             userData: [],
             showTab: "user",
+            userName: "",
             emptyText: "数据加载中...",
             orgTree: [],
             userId: "",

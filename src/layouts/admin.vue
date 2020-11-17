@@ -24,8 +24,8 @@
         <Layout>
             <Affix>
                 <Header :style="{padding: 0}" class="layout-header-bar">
-                    <Row >
-                        <i-col span="20">
+                    <Row>
+                        <i-col span="19">
                             <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '0 20px'}" type="md-menu" size="24"></Icon>
                         </i-col>
                         <!-- <i-col span="1">
@@ -38,13 +38,25 @@
                             </Dropdown>
                         </i-col> -->
                         <i-col span="1">
-                            <Icon :style="[{margin: '0 5px'},{cursor: 'pointer'}]" type="md-notifications-outline" size="24"></Icon>
+                            <Icon :style="[{margin: '0 5px'},{cursor: 'pointer'}]" @click="$Message.info('功能开发中，敬请期待');" type="md-notifications-outline" size="24"></Icon>
                         </i-col>
-                        <i-col span="1">
+                        <i-col span="4">
                             <Dropdown trigger="click">
                                 <div style="cursor:pointer">
-                                    <Avatar :src="app.userInfo.avatar" />
-                                    <Icon type="md-arrow-dropdown" />
+                                    <i-row type="flex" :gutter="16">
+                                        <i-col>
+                                            <Avatar :src="app.userInfo.avatar" />
+                                        </i-col>
+                                        <i-col style="margin-top: 15px; max-width: 60%;">
+                                            <p style="line-height: 20px; overflow:hidden; text-overflow:ellipsis; white-space: nowrap;">{{app.userInfo.realName}}</p>
+                                            <p style="line-height: 20px; font-size: 12px; overflow:hidden; text-overflow:ellipsis; white-space: nowrap;">
+                                                {{`${app.userInfo.region.province} ${app.userInfo.region.city}`}}
+                                            </p>
+                                        </i-col>
+                                        <i-col>
+                                            <Icon type="md-arrow-dropdown" />
+                                        </i-col>
+                                    </i-row>
                                 </div>
                                 <DropdownMenu slot="list">
                                     <DropdownItem>
