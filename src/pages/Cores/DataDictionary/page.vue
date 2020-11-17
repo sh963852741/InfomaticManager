@@ -7,11 +7,11 @@
                 如：在某流程中，第一步为“<b>待审核</b>”，记录数据库的值为0。则，对于数据字典而言，<b>显示内容</b>为“待审核”，<b>数据库值</b>为0。
             </template>
         </Alert>
-        <i-row class="searcher" type="flex">
-            <i-col span="2" class="add-btn-area">
+        <i-row class="searcher" type="flex" :gutter="16">
+            <i-col>
                 <i-button size="large" type="primary" @click="toEdit('', '', '')">新建数据</i-button>
             </i-col>
-            <i-col span="6">
+            <i-col>
                 <i-input prefix="ios-search" size="large" placeholder="按分类查询" v-model="category" @keyup.enter.native="getData" />
             </i-col>
         </i-row>

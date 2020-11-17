@@ -71,15 +71,17 @@ export default {
             })
         },
         removeRole (id) {
-            if (!confirm("是否删除该角色")) {
-                return;
-            }
-            axios.post("/api/security/RemoveRole", { id }, msg => {
-                if (msg.success) {
-                    this.$Message.success(msg.msg)
+            this.$Modal.confirm({
+                title: "是否删除该角色",
+                onOk: () => {
+                    axios.post("/api/security/RemoveRole", { id }, msg => {
+                        if (msg.success) {
+                            this.$Message.success(msg.msg)
+                        }
+                        this.getData();
+                    })
                 }
-                this.getData();
-            })
+            });
         },
         addSingleRole () {
             axios.post("/api/security/SaveRole", { role: this.newRole }, msg => {
@@ -92,7 +94,6 @@ export default {
             })
         },
         addRole () {
-            debugger
             this.$Modal.confirm({
                 render: (h) => {
                     return h('Input', {
@@ -107,14 +108,16 @@ export default {
                             },
                             "on-keyup" (event) {
                                 if (event.keyCode === 13) {
-                                   this.addSingleRole();
+                                    this.addSingleRole();
                                 }
                             }
                         }
                     })
                 },
-                onOk: this.addSingleRole(),
-                loading: true
+                onOk: () => {
+                    this.addSingleRole()
+                },
+                loading: false
             })
         }
     },
