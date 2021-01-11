@@ -63,8 +63,14 @@
                 <i-button type="primary">搜索</i-button>
                 <i-button icon="ios-trash">清空条件</i-button>
             </i-form>
+            <i-divider />
             <i-row>
-                <!-- 这里是表格 -->
+                <i-table stripe :columns="LecturesCol" :data="LectureData">
+                    <template slot-scope="{row}" slot="ope">
+                        <a class="btn" href="javascript:;" @click="malert('详情')">[详情]</a>
+                        <a class="btn" href="javascript:;" @click="malert('删除')">[删除]</a>
+                    </template>
+                </i-table>
             </i-row>
         </i-card>
         <i-modal v-model="showModal">
@@ -164,13 +170,79 @@ export default {
                         trigger: "blur"
                     }
                 ]
-            }
+            },
+            LecturesCol: [
+                {
+                    title: '题目',
+                    key: 'title'
+                },
+                {
+                    title: '讲座期数',
+                    key: 'num'
+                },
+                {
+                    title: '汇报人',
+                    key: 'host'
+                },
+                {
+                    title: '时间',
+                    key: 'time'
+                },
+                {
+                    title: '地点',
+                    key: 'address'
+                },
+                {
+                    title: '操作',
+                    slot: 'ope'
+                }
+            ],
+            LectureData: [
+                {
+                    title: '测试讲座01',
+                    num: 10,
+                    host: '李子桐',
+                    time: '2021年1月11日 12:00:00 - 14:00:00',
+                    address: '报告厅01'
+                },
+                {
+                    title: '测试讲座02',
+                    num: 10,
+                    host: '李子桐',
+                    time: '2021年1月11日 12:00:00 - 14:00:00',
+                    address: '报告厅01'
+                },
+                {
+                    title: '测试讲座03',
+                    num: 10,
+                    host: '李子桐',
+                    time: '2021年1月11日 12:00:00 - 14:00:00',
+                    address: '报告厅01'
+                },
+                {
+                    title: '测试讲座04',
+                    num: 10,
+                    host: '李子桐',
+                    time: '2021年1月11日 12:00:00 - 14:00:00',
+                    address: '报告厅01'
+                },
+                {
+                    title: '测试讲座05',
+                    num: 10,
+                    host: '李子桐',
+                    time: '2021年1月11日 12:00:00 - 14:00:00',
+                    address: '报告厅01'
+                }
+            ]
         }
     },
     methods: {
         setKeyword: _.debounce(function () {
             // do nothing
-        }, 500)
+        }, 500),
+        malert: function (i) {
+            alert(i);
+        }
     }
 }
 </script>
