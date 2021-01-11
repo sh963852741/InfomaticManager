@@ -13,5 +13,10 @@ module.exports = {
         path: "/manage/wwf/config",
         layout: "admin",
         component: () => import(/* webpackChunkName: "WorkflowManager" */"@p/Modules/WorkflowConfig")
+    },
+    ActivityManager: {
+        path: "/manage/management/lecture",
+        layout: "admin",
+        component: () => import(/* webpackChunkName: "LectureManager" */"@p/Modules/LectureManagement/Lecture")
     }
 };
