@@ -18,5 +18,10 @@ module.exports = {
         path: "/manage/management/lecture",
         layout: "admin",
         component: () => import(/* webpackChunkName: "LectureManager" */"@p/Modules/LectureManagement/Lecture")
+    },
+    SubActivityManager: {
+        path: "/manage/management/sub-lecture",
+        layout: "admin",
+        component: () => import(/* webpackChunkName: "LectureManager" */"@p/Modules/LectureManagement/SubLecture")
     }
 };

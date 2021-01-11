@@ -4,27 +4,29 @@
             <i-row>
                 <i-row type="flex" :gutter="16">
                     <i-col>
-                        <i-button>新建讲座</i-button>
+                        <i-button @click="showModal = true">新建讲座</i-button>
                     </i-col>
                     <i-col span="10">
                         <i-auto-complete icon="ios-search">
                             <div class="demo-auto-complete-item" :key="item.title" v-for="item in autoCompleteOptions">
                                 <div class="demo-auto-complete-group">
                                     <span>{{ item.title }}</span>
-                                    <a href="https://www.google.com/search?q=iView" target="_blank">更多</a>
+                                    <!-- <a href="https://www.google.com/search?q=iView" target="_blank">更多</a> -->
                                 </div>
                                 <Option v-for="option in item.children" :value="option.title" :key="option.title">
                                     <span class="demo-auto-complete-title">{{ option.title }}</span>
-                                    <span class="demo-auto-complete-count">{{ option.count }} 人关注</span>
+                                    <span class="demo-auto-complete-count">{{ option.count }} 个结果</span>
                                 </Option>
                             </div>
-                            <a href="https://www.google.com/search?q=iView" target="_blank" class="demo-auto-complete-more">查看所有结果</a>
                         </i-auto-complete>
                     </i-col>
                     <i-col>
                         <i-button type="text" @click="advanceSearch = !advanceSearch">{{advanceSearch ? "高级搜索" : "普通搜索"}}</i-button>
                     </i-col>
                 </i-row>
+            </i-row>
+            <i-row>
+                <!-- filter -->
             </i-row>
             <i-divider />
             <i-form v-show="advanceSearch">
@@ -65,10 +67,37 @@
                 <!-- 这里是表格 -->
             </i-row>
         </i-card>
+        <i-modal v-model="showModal">
+            <template slot="header">
+                <span>新建讲座</span>
+            </template>
+            <i-form label-position="left" :label-width="100" :rules="formRule">
+                <i-form-item label="讲座题目" prop="title">
+                    <i-input />
+                </i-form-item>
+                <i-form-item label="期数" prop="count">
+                    <i-input />
+                </i-form-item>
+                <i-form-item label="汇报人" prop="reporter">
+                    <i-input />
+                </i-form-item>
+                <i-form-item label="时间" prop="time">
+                    <i-input />
+                </i-form-item>
+                <i-form-item label="地点" prop="place">
+                    <i-input />
+                </i-form-item>
+            </i-form>
+            <template slot="footer">
+                <Button type="primary">新建</Button>
+                <Button type="default">取消</Button>
+            </template>
+        </i-modal>
     </i-row>
 </template>
 
 <script>
+let _ = require("lodash");
 export default {
     data () {
         return {
@@ -97,8 +126,51 @@ export default {
                         }
                     ]
                 }
-            ]
+            ],
+            showModal: false,
+            formRule: {
+                title: [
+                    {
+                        required: true,
+                        message: "必须输入讲座名",
+                        trigger: "blur"
+                    }
+                ],
+                count: [
+                    {
+                        required: true,
+                        message: "必须输入讲座期数",
+                        trigger: "blur"
+                    }
+                ],
+                reporter: [
+                    {
+                        required: true,
+                        message: "必须输入汇报人姓名",
+                        trigger: "blur"
+                    }
+                ],
+                time: [
+                    {
+                        required: true,
+                        message: "必须输入时间",
+                        trigger: "blur"
+                    }
+                ],
+                place: [
+                    {
+                        required: true,
+                        message: "必须输入地点",
+                        trigger: "blur"
+                    }
+                ]
+            }
         }
+    },
+    methods: {
+        setKeyword: _.debounce(function () {
+            // do nothing
+        }, 500)
     }
 }
 </script>
