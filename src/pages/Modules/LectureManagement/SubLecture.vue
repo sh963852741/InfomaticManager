@@ -7,8 +7,8 @@
             <i-card title="讲座详情">
             <Tabs value="name1">
                 <TabPane label="详细信息" name="name1">标签一的内容</TabPane>
-                <TabPane label="签到管理" name="name2">标签二的内容</TabPane>
-                <TabPane label="XX管理" name="name3">标签三的内容</TabPane>
+                <TabPane label="报名管理" name="name2">标签二的内容</TabPane>
+                <TabPane label="签到管理" name="name3">标签三的内容</TabPane>
             </Tabs>
         </i-card>
         </i-col>
