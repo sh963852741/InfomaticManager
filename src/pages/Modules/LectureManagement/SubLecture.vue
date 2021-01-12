@@ -167,6 +167,8 @@ export default {
 <style>
 .tabHeader {
     height: 50px;
+    margin-left: 0;
+    padding: 0;
     background-color: white;
 }
 
