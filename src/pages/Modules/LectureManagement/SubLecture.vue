@@ -1,17 +1,23 @@
 <template>
     <i-row>
-        <i-col span="5" style="height: 100%">
-            <Card id="left-part-card" :bordered="false" title="子讲座列表" icon="md-list" :padding="0" dis-hover>
-            <CellGroup>
-                <Cell title="光的散射" label="已结束"/>
-                <Cell title="光的传播" label="或许可以写个状态什么的" />
-                <Cell title="光的色散" label="进行中" />
-                <Cell title="波粒二象性" label="进行中" />
-            </CellGroup>
-        </Card>
+        <i-col span="4">
+            <i-menu active-name="1" width="auto">
+                <i-menu-item name="1">光的散射</i-menu-item>
+                <i-menu-item name="2">光的传播</i-menu-item>
+                <i-menu-item name="3">光的色散</i-menu-item>
+                <i-menu-item name="4">波粒二象性</i-menu-item>
+            </i-menu>
+            <!-- <Card id="left-part-card" :bordered="false" title="选择子讲座" icon="md-list" :padding="0" dis-hover>
+                <CellGroup>
+                    <Cell title="光的散射" label="已结束"/>
+                    <Cell title="光的传播" label="或许可以写个状态什么的" />
+                    <Cell title="光的色散" label="进行中" />
+                    <Cell title="波粒二象性" label="进行中" />
+                </CellGroup>
+            </Card> -->
         </i-col>
-        <i-col span="19">
-            <i-card id="right-part-card" dis-hover :bordered="false">
+        <i-col span="20" id="right-part-card">
+            <i-card dis-hover :bordered="false">
                 <i-row type="flex">
                     <i-col span="1">
                         <i-avatar :src="app.webInfo.avatar" />
@@ -79,7 +85,7 @@
                         </i-row>
                     </i-col>
                 </i-row>
-                <Tabs value="name1">
+                <Tabs value="name2">
                     <TabPane label="报名管理" name="name2">标签二的内容</TabPane>
                     <TabPane label="签到管理" name="name3">标签三的内容</TabPane>
                 </Tabs>
@@ -96,9 +102,9 @@ export default {
             app
         }
     },
-    mounted () {
-        let rightHeight = document.getElementById("right-part-card").offsetHeight;
-        document.getElementById("left-part-card").style.height = rightHeight + 'px';
+    updated () {
+        // let rightHeight = document.getElementById("right-part-card").offsetHeight;
+        // document.getElementById("left-part-card").style.height = rightHeight + 'px';
     }
 }
 </script>
