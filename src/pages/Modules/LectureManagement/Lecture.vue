@@ -241,6 +241,10 @@ export default {
             // do nothing
         }, 500),
         malert: function (i) {
+            if (i === "详情") {
+                this.$router.push({name: "SubActivityManager"});
+                return;
+            }
             alert(i);
         }
     }
