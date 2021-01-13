@@ -65,7 +65,7 @@
             </i-form>
             <i-divider />
             <i-row>
-                <i-table stripe :columns="LecturesCol" :data="LectureData">
+                <i-table :loading="tableLoading" stripe :columns="LecturesCol" :data="LectureData">
                     <template slot-scope="{row}" slot="ope">
                         <a class="btn" href="javascript:;" @click="malert('详情')">[详情]</a>
                         <a class="btn" href="javascript:;" @click="malert('删除')">[删除]</a>
@@ -75,28 +75,31 @@
         </i-card>
         <i-modal v-model="showModal">
             <template slot="header">
-                <span>新建讲座</span>
+                <span>新建/修改讲座</span>
             </template>
-            <i-form label-position="left" :label-width="100" :rules="formRule">
+            <i-form ref="LectureForm" label-position="left" :label-width="100" :rules="formRule" :model="lecture">
                 <i-form-item label="讲座题目" prop="title">
-                    <i-input />
+                    <i-input v-model="lecture.title" />
                 </i-form-item>
                 <i-form-item label="期数" prop="count">
-                    <i-input />
+                    <i-input v-model="lecture.count" />
                 </i-form-item>
                 <i-form-item label="汇报人" prop="reporter">
-                    <i-input />
+                    <i-input v-model="lecture.reporter" />
                 </i-form-item>
-                <i-form-item label="时间" prop="time">
-                    <i-input />
+                <i-form-item label="开始时间" prop="beginTime">
+                    <i-date-picker v-model="lecture.beginTime" style="width: 100%"/>
+                </i-form-item>
+                <i-form-item label="结束时间" prop="endTime">
+                    <i-date-picker v-model="lecture.endTime" style="width: 100%"/>
                 </i-form-item>
                 <i-form-item label="地点" prop="place">
-                    <i-input />
+                    <i-input v-model="lecture.place" />
                 </i-form-item>
             </i-form>
             <template slot="footer">
-                <Button type="primary">新建</Button>
-                <Button type="default">取消</Button>
+                <Button type="primary" :loading="savingLecture" @click="saveLecture">保存</Button>
+                <Button type="default" @click="cancelLecture">取消</Button>
             </template>
         </i-modal>
     </i-row>
@@ -104,6 +107,7 @@
 
 <script>
 let _ = require("lodash");
+const axios = require("axios");
 export default {
     data () {
         return {
@@ -133,6 +137,7 @@ export default {
                     ]
                 }
             ],
+            lecture: {},
             showModal: false,
             formRule: {
                 title: [
@@ -153,13 +158,6 @@ export default {
                     {
                         required: true,
                         message: "必须输入汇报人姓名",
-                        trigger: "blur"
-                    }
-                ],
-                time: [
-                    {
-                        required: true,
-                        message: "必须输入时间",
                         trigger: "blur"
                     }
                 ],
@@ -233,10 +231,55 @@ export default {
                     time: '2021年1月11日 12:00:00 - 14:00:00',
                     address: '报告厅01'
                 }
-            ]
+            ],
+            savingLecture: false,
+            tableLoading: false
         }
     },
+    created () {
+        this.getLecture();
+    },
     methods: {
+        getLecture () {
+            this.tableLoading = true;
+            axios.post("/api/activity/GetActivityCategory", {}, msg => {
+                this.tableLoading = false;
+                if (msg.success) {
+                    this.LectureData = msg.data;
+                } else {
+                    this.$Message.error(msg.msg);
+                }
+            })
+        },
+        saveLecture () {
+            let form = this.$refs["LectureForm"];
+            form.validate((valid) => {
+                if (valid) {
+                    this.savingLecture = true;
+                    axios.post("/api/activity/SaveActivityCategory", {
+                        Name: this.lecture.title,
+                        BeginOn: this.lecture.beginTime,
+                        EndOn: this.lecture.endTime,
+                        Address: this.lecture.place,
+                        Serial: this.lecture.count,
+                        Hoster: this.lecture.reporter
+                    }, msg => {
+                        this.savingLecture = false;
+                        if (msg.success) {
+                            this.$Message.success("保存成功");
+                            this.showModal = false;
+                        } else {
+                            this.$Message.error(`${msg.msg}：${msg.errors}`);
+                        }
+                    })
+                }
+            })
+        },
+        cancelLecture () {
+            let form = this.$refs["LectureForm"];
+            form.resetFields();
+            this.showModal = false;
+        },
         setKeyword: _.debounce(function () {
             // do nothing
         }, 500),

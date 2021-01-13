@@ -1,14 +1,15 @@
 <template>
     <i-row>
         <i-col span="4">
-            <i-row class="add-sub-lecture">
-                <i-button icon="md-add-circle" type="primary">新建子讲座</i-button>
-            </i-row>
-            <i-menu active-name="1" width="auto" style="z-index: 8;">
-                <i-menu-item name="1">光的散射</i-menu-item>
-                <i-menu-item name="2">光的传播</i-menu-item>
-                <i-menu-item name="3">光的色散</i-menu-item>
-                <i-menu-item name="4">波粒二象性</i-menu-item>
+            <i-menu active-name="2" width="auto" style="z-index: 8;">
+                <i-menu-item name="1" style="border-bottom: 1px dashed #dcdee2;">
+                    <Icon type="md-add-circle" color="#2d8cf0"/>
+                    新建子讲座
+                </i-menu-item>
+                <i-menu-item name="2">光的散射</i-menu-item>
+                <i-menu-item name="3">光的传播</i-menu-item>
+                <i-menu-item name="4">光的色散</i-menu-item>
+                <i-menu-item name="5">波粒二象性</i-menu-item>
             </i-menu>
             <!-- <Card id="left-part-card" :bordered="false" title="选择子讲座" icon="md-list" :padding="0" dis-hover>
                 <CellGroup>
