@@ -64,11 +64,16 @@
                 <i-button icon="ios-trash">清空条件</i-button>
             </i-form>
             <i-divider />
+            <i-row type="flex" justify="end" :gutter="16" style="margin-bottom: 8px;">
+                <i-col><i-button type="primary" icon="ios-cloud-upload-outline">导入列表</i-button></i-col>
+                <i-col><i-button type="primary" icon="ios-cloud-download-outline">导出列表</i-button></i-col>
+            </i-row>
             <i-row>
                 <i-table :loading="tableLoading" stripe :columns="LecturesCol" :data="LectureData">
                     <template slot-scope="{row}" slot="ope">
-                        <a class="btn" href="javascript:;" @click="malert('详情')">[详情]</a>
-                        <a class="btn" href="javascript:;" @click="malert('删除')">[删除]</a>
+                        <a class="btn" href="javascript:;" @click="toDetail(row.ID)">[子讲座]</a>
+                        <a class="btn" href="javascript:;" @click="modifyLecture(row)">[修改]</a>
+                        <a class="btn" href="javascript:;" @click="deleteLecture(row.ID)">[删除]</a>
                     </template>
                 </i-table>
             </i-row>
@@ -87,10 +92,10 @@
                 <i-form-item label="汇报人" prop="reporter">
                     <i-input v-model="lecture.reporter" />
                 </i-form-item>
-                <i-form-item label="开始时间" prop="beginTime">
+                <i-form-item label="开始时间">
                     <i-date-picker v-model="lecture.beginTime" style="width: 100%"/>
                 </i-form-item>
-                <i-form-item label="结束时间" prop="endTime">
+                <i-form-item label="结束时间">
                     <i-date-picker v-model="lecture.endTime" style="width: 100%"/>
                 </i-form-item>
                 <i-form-item label="地点" prop="place">
@@ -137,7 +142,15 @@ export default {
                     ]
                 }
             ],
-            lecture: {},
+            lecture: {
+                id: "",
+                title: "",
+                count: "",
+                place: "",
+                reporter: "",
+                beginTime: "",
+                endTime: ""
+            },
             showModal: false,
             formRule: {
                 title: [
@@ -172,66 +185,34 @@ export default {
             LecturesCol: [
                 {
                     title: '题目',
-                    key: 'title'
+                    key: 'Name'
                 },
                 {
                     title: '讲座期数',
-                    key: 'num'
+                    key: 'Serial'
                 },
                 {
                     title: '汇报人',
-                    key: 'host'
+                    key: 'Hoster'
                 },
                 {
-                    title: '时间',
-                    key: 'time'
+                    title: '开始时间',
+                    key: 'BeginOn'
+                },
+                {
+                    title: '结束时间',
+                    key: 'EndOn'
                 },
                 {
                     title: '地点',
-                    key: 'address'
+                    key: 'Address'
                 },
                 {
                     title: '操作',
                     slot: 'ope'
                 }
             ],
-            LectureData: [
-                {
-                    title: '测试讲座01',
-                    num: 10,
-                    host: '李子桐',
-                    time: '2021年1月11日 12:00:00 - 14:00:00',
-                    address: '报告厅01'
-                },
-                {
-                    title: '测试讲座02',
-                    num: 10,
-                    host: '李子桐',
-                    time: '2021年1月11日 12:00:00 - 14:00:00',
-                    address: '报告厅01'
-                },
-                {
-                    title: '测试讲座03',
-                    num: 10,
-                    host: '李子桐',
-                    time: '2021年1月11日 12:00:00 - 14:00:00',
-                    address: '报告厅01'
-                },
-                {
-                    title: '测试讲座04',
-                    num: 10,
-                    host: '李子桐',
-                    time: '2021年1月11日 12:00:00 - 14:00:00',
-                    address: '报告厅01'
-                },
-                {
-                    title: '测试讲座05',
-                    num: 10,
-                    host: '李子桐',
-                    time: '2021年1月11日 12:00:00 - 14:00:00',
-                    address: '报告厅01'
-                }
-            ],
+            LectureData: [],
             savingLecture: false,
             tableLoading: false
         }
@@ -240,9 +221,27 @@ export default {
         this.getLecture();
     },
     methods: {
+        deleteLecture (ID) {
+            this.$Modal.confirm({
+                title: "确认删除",
+                content: "确实要删除本讲座吗？此操作不可恢复。",
+                onOk: () => {
+                    axios.post("/api/activity/RemoveActivityCategory", {id: ID}, msg => {
+                        if (msg.success) {
+                            this.$Message.success("删除成功");
+                        } else {
+                            this.$Message.error(msg.msg);
+                        }
+                    })
+                }
+            })
+        },
+        toDetail (ID) {
+            this.$router.push({name: "SubActivityManager", query: {id: ID}});
+        },
         getLecture () {
             this.tableLoading = true;
-            axios.post("/api/activity/GetActivityCategory", {}, msg => {
+            axios.post("/api/activity/GetAcitvities", {}, msg => {
                 this.tableLoading = false;
                 if (msg.success) {
                     this.LectureData = msg.data;
@@ -257,6 +256,7 @@ export default {
                 if (valid) {
                     this.savingLecture = true;
                     axios.post("/api/activity/SaveActivityCategory", {
+                        ID: this.lecture.id,
                         Name: this.lecture.title,
                         BeginOn: this.lecture.beginTime,
                         EndOn: this.lecture.endTime,
@@ -283,12 +283,15 @@ export default {
         setKeyword: _.debounce(function () {
             // do nothing
         }, 500),
-        malert: function (i) {
-            if (i === "详情") {
-                this.$router.push({name: "SubActivityManager"});
-                return;
-            }
-            alert(i);
+        modifyLecture (src) {
+            this.lecture.id = src.ID;
+            this.lecture.title = src.Name;
+            this.lecture.beginTime = src.BeginOn;
+            this.lecture.endTime = src.EndOn;
+            this.lecture.place = src.Address;
+            this.lecture.count = src.Serial;
+            this.lecture.reporter = src.Hoster;
+            this.showModal = true;
         }
     }
 }
