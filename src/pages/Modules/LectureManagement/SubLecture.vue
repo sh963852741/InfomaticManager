@@ -1,14 +1,12 @@
 <template>
     <i-row>
         <i-col span="4">
-            <Affix :offset-top="leftHeight">
-                <i-menu active-name="1" width="auto" id="left-part-menu">
-                    <i-menu-item name="1">光的散射</i-menu-item>
-                    <i-menu-item name="2">光的传播</i-menu-item>
-                    <i-menu-item name="3">光的色散</i-menu-item>
-                    <i-menu-item name="4">波粒二象性</i-menu-item>
-                </i-menu>
-            </Affix>
+            <i-menu active-name="1" width="auto" style="z-index: 8;">
+                <i-menu-item name="1">光的散射</i-menu-item>
+                <i-menu-item name="2">光的传播</i-menu-item>
+                <i-menu-item name="3">光的色散</i-menu-item>
+                <i-menu-item name="4">波粒二象性</i-menu-item>
+            </i-menu>
             <!-- <Card id="left-part-card" :bordered="false" title="选择子讲座" icon="md-list" :padding="0" dis-hover>
                 <CellGroup>
                     <Cell title="光的散射" label="已结束"/>
@@ -18,7 +16,7 @@
                 </CellGroup>
             </Card> -->
         </i-col>
-        <i-col span="20" id="right-part-card">
+        <i-col span="20">
             <i-card dis-hover :bordered="false">
                 <i-row type="flex">
                     <i-col span="1">
@@ -117,6 +115,7 @@
                 </i-tabs>
             </i-card>
         </i-col>
+        <BackTop></BackTop>
     </i-row>
 </template>
 
@@ -214,7 +213,7 @@ export default {
                 }
             ],
             app,
-            leftHeight: 84
+            leftHeight: 0
         }
     },
     updated () {
@@ -222,9 +221,11 @@ export default {
         // document.getElementById("left-part-card").style.height = rightHeight + 'px';
     },
     mounted () {
-        let leftHeight = document.getElementById("left-part-menu").getBoundingClientRect().top;
-        debugger
-        this.leftHeight = leftHeight;
+        // this.$nextTick(()=>{
+        //     let leftHeight = document.getElementById("left-part-menu").getBoundingClientRect().top;
+        //     debugger
+        //     this.leftHeight = leftHeight;
+        // })
     }
 }
 </script>
