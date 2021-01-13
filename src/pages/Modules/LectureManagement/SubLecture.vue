@@ -1,45 +1,42 @@
 <template>
     <i-row>
-        <i-col span="5">
-            <Card title="子讲座列表" icon="ios-options" :padding="0" dis-hover>
-            <CellGroup>
-                <Cell title="Only show titles" />
-                <Cell title="Display label content" label="label content" />
-                <Cell title="Display right content" extra="details" />
-                <Cell title="Link" extra="details" to="/components/button" />
-                <Cell title="Open link in new window" to="/components/button" target="_blank" />
-                <Cell title="Disabled" disabled />
-                <Cell title="Selected" selected />
-                <Cell title="With Badge" to="/components/badge">
-                    <Badge :count="10" slot="extra" />
-                </Cell>
-                <Cell title="With Switch">
-                    <Switch v-model="switchValue" slot="extra" />
-                </Cell>
-            </CellGroup>
-        </Card>
+        <i-col span="4">
+            <i-menu active-name="1" width="auto">
+                <i-menu-item name="1">光的散射</i-menu-item>
+                <i-menu-item name="2">光的传播</i-menu-item>
+                <i-menu-item name="3">光的色散</i-menu-item>
+                <i-menu-item name="4">波粒二象性</i-menu-item>
+            </i-menu>
+            <!-- <Card id="left-part-card" :bordered="false" title="选择子讲座" icon="md-list" :padding="0" dis-hover>
+                <CellGroup>
+                    <Cell title="光的散射" label="已结束"/>
+                    <Cell title="光的传播" label="或许可以写个状态什么的" />
+                    <Cell title="光的色散" label="进行中" />
+                    <Cell title="波粒二象性" label="进行中" />
+                </CellGroup>
+            </Card> -->
         </i-col>
-        <i-col span="19">
-            <i-card dis-hover>
+        <i-col span="20" id="right-part-card">
+            <i-card dis-hover :bordered="false">
                 <i-row type="flex">
                     <i-col span="1">
-                        <i-avatar />
+                        <i-avatar :src="app.webInfo.avatar" />
                     </i-col>
                     <i-col span="23">
                         <i-row style= "margin-bottom: 16px;" type="flex" justify="space-between" align="middle">
                             <i-col>
-                                讲座管理：第一节课（光的散射）
+                                <span class="head-title">讲座管理：第一节课（光的散射）</span>
                             </i-col>
                             <i-col>
                                 <i-button type="primary">确认修改</i-button>
                             </i-col>
                         </i-row>
                         <i-row type="flex" justify="space-between">
-                            <i-col span="18">
+                            <i-col span="18" id="sub-lecture-detail">
                                 <i-form label-position="left" :label-width="120" :label-colon="true">
                                     <i-row type="flex" justify="space-between">
                                         <i-col span="10">
-                                            <i-form-item label="回报题目">
+                                            <i-form-item label="汇报题目">
                                                 <i-input size="small" />
                                             </i-form-item>
                                         </i-col>
@@ -82,14 +79,13 @@
                                 </i-form>
                             </i-col>
                             <i-col>
-                                <span>状态：</span>
-                                <br />
-                                <span>OK</span>
+                                <p style="color: rgb(128, 134, 149);">状态</p>
+                                <p style="font-size: 24px;">OK</p>
                             </i-col>
                         </i-row>
                     </i-col>
                 </i-row>
-                <Tabs value="name1">
+                <Tabs value="name2">
                 <TabPane label="报名管理" name="name2">
                     <Layout>
                         <Header class="tabHeader">
@@ -119,6 +115,7 @@
 </template>
 
 <script>
+const app = require("@/config")
 export default {
     data () {
         return {
@@ -241,8 +238,13 @@ export default {
                     communicate: '15103128777',
                     signInTime: '2021年1月12日 12:00:00'
                 }
-            ]
+            ],
+            app
         }
+    },
+    updated () {
+        // let rightHeight = document.getElementById("right-part-card").offsetHeight;
+        // document.getElementById("left-part-card").style.height = rightHeight + 'px';
     }
 }
 </script>
@@ -263,5 +265,14 @@ export default {
 
 .outPutBtn {
     float: right;
+}
+.head-title {
+    display: inline-block;
+    color: #17233d;
+    font-weight: 500;
+    font-size: 20px;
+}
+#sub-lecture-detail .ivu-form-item-label {
+    color: #17233d;
 }
 </style>
