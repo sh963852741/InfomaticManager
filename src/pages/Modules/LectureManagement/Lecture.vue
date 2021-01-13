@@ -4,7 +4,7 @@
             <i-row>
                 <i-row type="flex" :gutter="16">
                     <i-col>
-                        <i-button @click="showModal = true">新建讲座</i-button>
+                        <i-button @click="showModal = true" type="primary">新建讲座</i-button>
                     </i-col>
                     <i-col span="10">
                         <i-auto-complete icon="ios-search">
@@ -21,7 +21,7 @@
                         </i-auto-complete>
                     </i-col>
                     <i-col>
-                        <i-button type="text" @click="advanceSearch = !advanceSearch">{{advanceSearch ? "高级搜索" : "普通搜索"}}</i-button>
+                        <i-button type="text" @click="advanceSearch = !advanceSearch">{{advanceSearch ? "普通搜索" : "高级搜索"}}</i-button>
                     </i-col>
                 </i-row>
             </i-row>
@@ -29,7 +29,7 @@
                 <!-- filter -->
             </i-row>
             <i-divider />
-            <i-form v-show="advanceSearch">
+            <i-form v-show="advanceSearch" label-position="top">
                 <i-row type="flex" justify="space-between">
                     <i-col span="6">
                         <i-form-item label="期数" placeholder="请输入讲座期数">
@@ -50,7 +50,7 @@
                 <i-row type="flex" justify="space-between">
                     <i-col span="6">
                         <i-form-item label="时间" placeholder="请输入汇报时间">
-                            <i-input />
+                            <i-date-picker style="width: 100%;" type="daterange" separator=" 至 " />
                         </i-form-item>
                     </i-col>
                     <i-col span="6">

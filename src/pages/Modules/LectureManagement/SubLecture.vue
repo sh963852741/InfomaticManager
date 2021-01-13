@@ -1,6 +1,9 @@
 <template>
     <i-row>
         <i-col span="4">
+            <i-row class="add-sub-lecture">
+                <i-button icon="md-add-circle" type="primary">新建子讲座</i-button>
+            </i-row>
             <i-menu active-name="1" width="auto" style="z-index: 8;">
                 <i-menu-item name="1">光的散射</i-menu-item>
                 <i-menu-item name="2">光的传播</i-menu-item>
@@ -28,7 +31,8 @@
                                 <span class="head-title">讲座管理：第一节课（光的散射）</span>
                             </i-col>
                             <i-col>
-                                <i-button type="primary">确认修改</i-button>
+                                <i-button icon="md-create" type="primary">确认修改</i-button>
+                                <i-button type="error" icon="md-trash">删除子讲座</i-button>
                             </i-col>
                         </i-row>
                         <i-row type="flex" justify="space-between">
@@ -243,7 +247,9 @@ export default {
 #sub-lecture-detail .ivu-form-item-label {
     color: #17233d;
 }
-.sub-lecture-menu {
-    position: fixed;
+.add-sub-lecture {
+    padding: 8px 24px;
+    background: #fff;
+    border-right: 1px solid #dcdee2;
 }
 </style>
