@@ -102,9 +102,13 @@
                         </i-row>
                     </i-tab-pane>
                     <i-tab-pane label="签到管理" name="name3">
-                        <i-row type="flex" :gutter="16">
-                            <i-input search enter-button="搜索" placeholder="请输入要搜索的信息" />
-                            <Button class="outPutBtn" type="primary">导出签到信息</Button>
+                        <i-row type="flex" justify="space-between">
+                            <i-col>
+                                <i-input search enter-button="搜索" placeholder="请输入要搜索的信息" />
+                            </i-col>
+                            <i-col>
+                                <Button class="outPutBtn" type="primary">导出签到信息</Button>
+                            </i-col>
                         </i-row>
                         <i-row class="table-margin">
                             <Table stripe :columns="signInCol" :data="signInData"></Table>
