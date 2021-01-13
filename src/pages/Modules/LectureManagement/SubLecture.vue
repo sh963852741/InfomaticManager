@@ -1,12 +1,14 @@
 <template>
     <i-row>
         <i-col span="4">
-            <i-menu active-name="1" width="auto">
-                <i-menu-item name="1">光的散射</i-menu-item>
-                <i-menu-item name="2">光的传播</i-menu-item>
-                <i-menu-item name="3">光的色散</i-menu-item>
-                <i-menu-item name="4">波粒二象性</i-menu-item>
-            </i-menu>
+            <Affix :offset-top="leftHeight">
+                <i-menu active-name="1" width="auto" id="left-part-menu">
+                    <i-menu-item name="1">光的散射</i-menu-item>
+                    <i-menu-item name="2">光的传播</i-menu-item>
+                    <i-menu-item name="3">光的色散</i-menu-item>
+                    <i-menu-item name="4">波粒二象性</i-menu-item>
+                </i-menu>
+            </Affix>
             <!-- <Card id="left-part-card" :bordered="false" title="选择子讲座" icon="md-list" :padding="0" dis-hover>
                 <CellGroup>
                     <Cell title="光的散射" label="已结束"/>
@@ -85,30 +87,30 @@
                         </i-row>
                     </i-col>
                 </i-row>
-                <Tabs value="name2">
-                <TabPane label="报名管理" name="name2">
-                    <Layout>
-                        <Header class="tabHeader">
-                            <Input class="searchBox" search enter-button="搜索" placeholder="请输入要搜索的信息" />
-                            <Button class="outPutBtn" type="primary">导出报名信息</Button>
-                        </Header>
-                        <Content>
+                <i-tabs value="name2">
+                    <i-tab-pane label="报名管理" name="name2">
+                        <i-row type="flex" justify="space-between">
+                            <i-col>
+                                <i-input search enter-button="搜索" placeholder="请输入要搜索的信息" />
+                            </i-col>
+                            <i-col>
+                                <Button class="outPutBtn" type="primary">导出报名信息</Button>
+                            </i-col>
+                        </i-row>
+                        <i-row class="table-margin">
                             <Table stripe :columns="signUpCol" :data="signUpData"></Table>
-                        </Content>
-                    </Layout>
-                </TabPane>
-                <TabPane label="签到管理" name="name3">
-                    <Layout>
-                        <Header class="tabHeader">
-                            <Input class="searchBox" search enter-button="搜索" placeholder="请输入要搜索的信息" />
+                        </i-row>
+                    </i-tab-pane>
+                    <i-tab-pane label="签到管理" name="name3">
+                        <i-row type="flex" :gutter="16">
+                            <i-input search enter-button="搜索" placeholder="请输入要搜索的信息" />
                             <Button class="outPutBtn" type="primary">导出签到信息</Button>
-                        </Header>
-                        <Content>
+                        </i-row>
+                        <i-row class="table-margin">
                             <Table stripe :columns="signInCol" :data="signInData"></Table>
-                        </Content>
-                    </Layout>
-                </TabPane>
-            </Tabs>
+                        </i-row>
+                    </i-tab-pane>
+                </i-tabs>
             </i-card>
         </i-col>
     </i-row>
@@ -119,38 +121,6 @@ const app = require("@/config")
 export default {
     data () {
         return {
-            data1: [
-                {
-                    title: 'parent 1',
-                    expand: true,
-                    children: [
-                        {
-                            title: 'parent 1-1',
-                            expand: true,
-                            children: [
-                                {
-                                    title: 'leaf 1-1-1'
-                                },
-                                {
-                                    title: 'leaf 1-1-2'
-                                }
-                            ]
-                        },
-                        {
-                            title: 'parent 1-2',
-                            expand: true,
-                            children: [
-                                {
-                                    title: 'leaf 1-2-1'
-                                },
-                                {
-                                    title: 'leaf 1-2-1'
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ],
             signUpCol: [
                 {
                     title: '姓名',
@@ -239,32 +209,25 @@ export default {
                     signInTime: '2021年1月12日 12:00:00'
                 }
             ],
-            app
+            app,
+            leftHeight: 84
         }
     },
     updated () {
         // let rightHeight = document.getElementById("right-part-card").offsetHeight;
         // document.getElementById("left-part-card").style.height = rightHeight + 'px';
+    },
+    mounted () {
+        let leftHeight = document.getElementById("left-part-menu").getBoundingClientRect().top;
+        debugger
+        this.leftHeight = leftHeight;
     }
 }
 </script>
 
 <style>
-.tabHeader {
-    height: 50px;
-    margin-left: 0;
-    padding: 0;
-    background-color: white;
-}
-
-.searchBox {
-    float: left;
-    width: 50%;
-    height: 30px;
-}
-
-.outPutBtn {
-    float: right;
+.table-margin {
+    margin-top: 16px;
 }
 .head-title {
     display: inline-block;
@@ -274,5 +237,8 @@ export default {
 }
 #sub-lecture-detail .ivu-form-item-label {
     color: #17233d;
+}
+.sub-lecture-menu {
+    position: fixed;
 }
 </style>
