@@ -230,6 +230,7 @@ export default {
                     axios.post("/api/activity/RemoveActivityCategory", {id: ID}, msg => {
                         if (msg.success) {
                             this.$Message.success("删除成功");
+                            this.getLecture();
                         } else {
                             this.$Message.error(msg.msg);
                         }
@@ -269,6 +270,7 @@ export default {
                         if (msg.success) {
                             this.$Message.success("保存成功");
                             this.showModal = false;
+                            this.getLecture();
                         } else {
                             this.$Message.error(`${msg.msg}：${msg.errors}`);
                         }

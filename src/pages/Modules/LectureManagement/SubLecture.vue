@@ -1,15 +1,16 @@
 <template>
     <i-row>
         <i-col span="4">
-            <i-menu active-name="2" width="auto" style="z-index: 8;" @on-select="getSubLecture">
+            <i-menu :active-name="activeMenu" width="auto" style="z-index: 8;" @on-select="getSubLecture">
                 <i-menu-item name="New" style="border-bottom: 1px dashed #dcdee2;">
                     <Icon type="md-add-circle" color="#2d8cf0"/>
                     新建子讲座
                 </i-menu-item>
-                <i-menu-item name="2">光的散射</i-menu-item>
+                <!-- <i-menu-item name="2">光的散射</i-menu-item>
                 <i-menu-item name="3">光的传播</i-menu-item>
                 <i-menu-item name="4">光的色散</i-menu-item>
-                <i-menu-item name="5">波粒二象性</i-menu-item>
+                <i-menu-item name="5">波粒二象性</i-menu-item> -->
+                <i-menu-item v-for="tmp in subLectureData" :key= tmp.ID :name = tmp.ID>{{tmp.Name}}</i-menu-item>
             </i-menu>
         </i-col>
         <i-col span="20">
@@ -25,12 +26,12 @@
                             </i-col>
                             <i-col>
                                 <i-button icon="md-create" type="primary" @click="saveSubLecture">{{addSubLectureMode ? "确认新建" : "确认修改"}}</i-button>
-                                <i-button type="error" icon="md-trash" :disabled="addSubLectureMode">删除子讲座</i-button>
+                                <i-button type="error" icon="md-trash" :disabled="addSubLectureMode || this.subLectureData.length <= 1" @click="deleteSubLecture">删除子讲座</i-button>
                             </i-col>
                         </i-row>
                         <i-row type="flex" justify="space-between">
                             <i-col span="18" id="sub-lecture-detail">
-                                <i-form label-position="left" :label-width="120" :label-colon="true" :modal="subLecture">
+                                <i-form ref="subLectureForm" label-position="left" :label-width="120" :label-colon="true" :modal="subLecture">
                                     <i-row type="flex" justify="space-between">
                                         <i-col span="10">
                                             <i-form-item label="汇报题目" prop="title">
@@ -59,12 +60,12 @@
                                         </i-col>
                                         <i-col span="10">
                                             <i-form-item label="预约开始时间">
-                                                <i-input size="small" v-model="subLecture.bookingBegin" />
+                                                <i-date-picker size="small" v-model="subLecture.bookingBegin" />
                                             </i-form-item>
                                         </i-col>
                                         <i-col span="10">
                                             <i-form-item label="预约结束时间">
-                                                <i-input size="small" v-model="subLecture.bookingEnd" />
+                                                <i-date-picker size="small" v-model="subLecture.bookingEnd" />
                                             </i-form-item>
                                         </i-col>
                                         <i-col span="10">
@@ -211,8 +212,23 @@ export default {
                 }
             ],
             app,
-            subLecture: {},
-            addSubLectureMode: false
+            subLecture: {
+                title: "",
+                count: "",
+                reporter: "",
+                time: "",
+                place: "",
+                bookingBegin: "",
+                bookingEnd: "",
+                availableCount: "",
+                id: ""
+            },
+            addSubLectureMode: true,
+            menuLoading: false,
+            savingSubLecture: false,
+            subLectureData: [],
+            selected: "",
+            activeMenu: "New"
         }
     },
     created () {
@@ -220,22 +236,95 @@ export default {
     },
     methods: {
         saveSubLecture () {
-
+            let form = this.$refs["subLectureForm"];
+            form.validate((valid) => {
+                if (valid) {
+                    this.savingSubLecture = true;
+                    axios.post("/api/activity/SaveActivity", {
+                        ID: this.subLecture.id,
+                        Name: this.subLecture.title,
+                        BeginOn: this.subLecture.time,
+                        // EndOn: this.subLecture.endTime,
+                        SignUpBegin: this.subLecture.bookingBegin,
+                        SignUpEnd: this.subLecture.bookingEnd,
+                        SignUpLimit: this.subLecture.availableCount,
+                        Address: this.subLecture.place,
+                        Serial: this.subLecture.count,
+                        Hoster: this.subLecture.reporter,
+                        CategoryId: this.$route.query.id
+                    }, msg => {
+                        this.savingLecture = false;
+                        if (msg.success) {
+                            this.$Message.success("保存成功");
+                            this.showModal = false;
+                            this.addSubLectureMode = false;
+                            this.getSubLectures(this.$route.query.id);
+                            this.activeMenu = this.subLectureData[0].ID;
+                            this.getSubLecture(this.subLectureData[0].ID);
+                        } else {
+                            this.$Message.error(`${msg.msg}：${msg.errors}`);
+                        }
+                    })
+                }
+            })
+            // location.reload();
         },
-        getSubLecture (menuName) {
-            if (menuName === "New") {
+        getSubLectures (lectureId) {
+            this.menuLoading = true;
+            axios.post("/api/activity/GetActivityCategory", {id: lectureId}, msg => {
+                this.menuLoading = false;
+                if (msg.success) {
+                    this.subLectureData = msg.activities;
+                    // alert("sub:" + this.subLectureData.length);
+                } else {
+                    this.$Message.error(msg.msg);
+                }
+            })
+        },
+        getSubLecture (lectureId) {
+            // var lectureId = this.selected;
+            // console.log("selected: " + lectureId);
+            if (lectureId !== "New") {
+                this.addSubLectureMode = false;
+                var i = 0;
+                for (i = 0; i < this.subLectureData.length; i++) {
+                    if (this.subLectureData[i].ID === lectureId) {
+                        this.subLecture.title = this.subLectureData[i].Name;
+                        this.subLecture.count = this.subLectureData[i].Serial;
+                        this.subLecture.reporter = this.subLectureData[i].Hoster;
+                        this.subLecture.time = this.subLectureData[i].BeginOn;
+                        this.subLecture.id = this.subLectureData[i].ID;
+                        this.subLecture.bookingBegin = this.subLectureData[i].SignUpBegin;
+                        this.subLecture.bookingEnd = this.subLectureData[i].SignUpEnd;
+                        this.subLecture.availableCount = this.subLectureData[i].SignUpLimit;
+                        this.subLecture.place = this.subLectureData[i].Address;
+                        break;
+                    }
+                }
+            } else {
                 this.addSubLectureMode = true;
                 this.subLecture = {};
                 this.signInData = [];
                 this.signUpData = [];
             }
         },
-        getSubLectures (lectureId) {
-            axios.post("/api/activity/GetActivityCategory", {id: lectureId}, msg => {
-                if (msg.success) {
-                    //
-                } else {
-                    this.$Message.error(msg.msg);
+        deleteSubLecture () {
+            this.$Modal.confirm({
+                title: "确认删除",
+                content: "确实要删除本子活动吗？此操作不可恢复。",
+                onOk: () => {
+                    axios.post("/api/activity/RemoveActivity", {id: this.subLecture.id}, msg => {
+                        if (msg.success) {
+                            this.$Message.success("删除成功");
+                            this.getSubLectures(this.$route.query.id);
+                            // this.activeMenu = this.subLectureData[0].ID;
+                            // this.getSubLecture(this.subLectureData[0].ID);
+                            this.$router.go(0)
+                        } else {
+                            this.$Message.error(msg.msg);
+                        }
+                    })
+                    // location.reload();
                 }
             })
         }
