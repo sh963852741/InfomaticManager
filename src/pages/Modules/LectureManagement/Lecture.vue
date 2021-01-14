@@ -33,24 +33,24 @@
                 <i-row type="flex" justify="space-between">
                     <i-col span="6">
                         <i-form-item label="期数" placeholder="请输入讲座期数">
-                            <i-input />
+                            <i-input v-model="searchCondition.serial" />
                         </i-form-item>
                     </i-col>
                     <i-col span="6">
                         <i-form-item label="题目" placeholder="请输入讲座题目">
-                            <i-input />
+                            <i-input v-model="searchCondition.name" />
                         </i-form-item>
                     </i-col>
                     <i-col span="6">
                         <i-form-item label="汇报人" placeholder="请输入汇报人姓名">
-                            <i-input />
+                            <i-input v-model="searchCondition.hoster" />
                         </i-form-item>
                     </i-col>
                 </i-row>
                 <i-row type="flex" justify="space-between">
                     <i-col span="6">
                         <i-form-item label="时间" placeholder="请输入汇报时间">
-                            <i-date-picker style="width: 100%;" type="daterange" separator=" 至 " />
+                            <i-date-picker style="width: 100%;" v-model="searchCondition.date" type="daterange" separator=" 至 " />
                         </i-form-item>
                     </i-col>
                     <i-col span="6">
@@ -60,8 +60,8 @@
                     </i-col>
                     <i-col span="6"/>
                 </i-row>
-                <i-button type="primary">搜索</i-button>
-                <i-button icon="ios-trash">清空条件</i-button>
+                <i-button type="primary" @click="getLecture()">搜索</i-button>
+                <i-button icon="ios-trash" @click="clearSearch()">清空条件</i-button>
             </i-form>
             <i-divider />
             <i-row type="flex" justify="end" :gutter="16" style="margin-bottom: 8px;">
@@ -214,7 +214,8 @@ export default {
             ],
             LectureData: [],
             savingLecture: false,
-            tableLoading: false
+            tableLoading: false,
+            searchCondition: {}
         }
     },
     created () {
@@ -241,7 +242,7 @@ export default {
         },
         getLecture () {
             this.tableLoading = true;
-            axios.post("/api/activity/GetAcitvities", {}, msg => {
+            axios.post("/api/activity/GetAcitvities", {...this.searchCondition}, msg => {
                 this.tableLoading = false;
                 if (msg.success) {
                     this.LectureData = msg.data;
@@ -292,6 +293,9 @@ export default {
             this.lecture.count = src.Serial;
             this.lecture.reporter = src.Hoster;
             this.showModal = true;
+        },
+        clearSearch () {
+            this.searchCondition = {};
         }
     }
 }
