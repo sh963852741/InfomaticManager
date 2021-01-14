@@ -4,7 +4,7 @@
             <i-row>
                 <i-row type="flex" :gutter="16">
                     <i-col>
-                        <i-button @click="showModal = true">新建讲座</i-button>
+                        <i-button @click="showModal = true" type="primary">新建讲座</i-button>
                     </i-col>
                     <i-col span="10">
                         <i-auto-complete icon="ios-search">
@@ -21,7 +21,7 @@
                         </i-auto-complete>
                     </i-col>
                     <i-col>
-                        <i-button type="text" @click="advanceSearch = !advanceSearch">{{advanceSearch ? "高级搜索" : "普通搜索"}}</i-button>
+                        <i-button type="text" @click="advanceSearch = !advanceSearch">{{advanceSearch ? "普通搜索" : "高级搜索"}}</i-button>
                     </i-col>
                 </i-row>
             </i-row>
@@ -29,7 +29,7 @@
                 <!-- filter -->
             </i-row>
             <i-divider />
-            <i-form v-show="advanceSearch">
+            <i-form v-show="advanceSearch" label-position="top">
                 <i-row type="flex" justify="space-between">
                     <i-col span="6">
                         <i-form-item label="期数" placeholder="请输入讲座期数">
@@ -50,7 +50,7 @@
                 <i-row type="flex" justify="space-between">
                     <i-col span="6">
                         <i-form-item label="时间" placeholder="请输入汇报时间">
-                            <i-input />
+                            <i-date-picker style="width: 100%;" type="daterange" separator=" 至 " />
                         </i-form-item>
                     </i-col>
                     <i-col span="6">
@@ -64,39 +64,47 @@
                 <i-button icon="ios-trash">清空条件</i-button>
             </i-form>
             <i-divider />
+            <i-row type="flex" justify="end" :gutter="16" style="margin-bottom: 8px;">
+                <i-col><i-button type="primary" icon="ios-cloud-upload-outline">导入列表</i-button></i-col>
+                <i-col><i-button type="primary" icon="ios-cloud-download-outline">导出列表</i-button></i-col>
+            </i-row>
             <i-row>
-                <i-table stripe :columns="LecturesCol" :data="LectureData">
+                <i-table :loading="tableLoading" stripe :columns="LecturesCol" :data="LectureData">
                     <template slot-scope="{row}" slot="ope">
-                        <a class="btn" href="javascript:;" @click="malert('详情')">[详情]</a>
-                        <a class="btn" href="javascript:;" @click="malert('删除')">[删除]</a>
+                        <a class="btn" href="javascript:;" @click="toDetail(row.ID)">[子讲座]</a>
+                        <a class="btn" href="javascript:;" @click="modifyLecture(row)">[修改]</a>
+                        <a class="btn" href="javascript:;" @click="deleteLecture(row.ID)">[删除]</a>
                     </template>
                 </i-table>
             </i-row>
         </i-card>
         <i-modal v-model="showModal">
             <template slot="header">
-                <span>新建讲座</span>
+                <span>新建/修改讲座</span>
             </template>
-            <i-form label-position="left" :label-width="100" :rules="formRule">
+            <i-form ref="LectureForm" label-position="left" :label-width="100" :rules="formRule" :model="lecture">
                 <i-form-item label="讲座题目" prop="title">
-                    <i-input />
+                    <i-input v-model="lecture.title" />
                 </i-form-item>
                 <i-form-item label="期数" prop="count">
-                    <i-input />
+                    <i-input v-model="lecture.count" />
                 </i-form-item>
                 <i-form-item label="汇报人" prop="reporter">
-                    <i-input />
+                    <i-input v-model="lecture.reporter" />
                 </i-form-item>
-                <i-form-item label="时间" prop="time">
-                    <i-input />
+                <i-form-item label="开始时间">
+                    <i-date-picker v-model="lecture.beginTime" style="width: 100%"/>
+                </i-form-item>
+                <i-form-item label="结束时间">
+                    <i-date-picker v-model="lecture.endTime" style="width: 100%"/>
                 </i-form-item>
                 <i-form-item label="地点" prop="place">
-                    <i-input />
+                    <i-input v-model="lecture.place" />
                 </i-form-item>
             </i-form>
             <template slot="footer">
-                <Button type="primary">新建</Button>
-                <Button type="default">取消</Button>
+                <Button type="primary" :loading="savingLecture" @click="saveLecture">保存</Button>
+                <Button type="default" @click="cancelLecture">取消</Button>
             </template>
         </i-modal>
     </i-row>
@@ -104,6 +112,7 @@
 
 <script>
 let _ = require("lodash");
+const axios = require("axios");
 export default {
     data () {
         return {
@@ -133,6 +142,15 @@ export default {
                     ]
                 }
             ],
+            lecture: {
+                id: "",
+                title: "",
+                count: "",
+                place: "",
+                reporter: "",
+                beginTime: "",
+                endTime: ""
+            },
             showModal: false,
             formRule: {
                 title: [
@@ -156,13 +174,6 @@ export default {
                         trigger: "blur"
                     }
                 ],
-                time: [
-                    {
-                        required: true,
-                        message: "必须输入时间",
-                        trigger: "blur"
-                    }
-                ],
                 place: [
                     {
                         required: true,
@@ -174,78 +185,113 @@ export default {
             LecturesCol: [
                 {
                     title: '题目',
-                    key: 'title'
+                    key: 'Name'
                 },
                 {
                     title: '讲座期数',
-                    key: 'num'
+                    key: 'Serial'
                 },
                 {
                     title: '汇报人',
-                    key: 'host'
+                    key: 'Hoster'
                 },
                 {
-                    title: '时间',
-                    key: 'time'
+                    title: '开始时间',
+                    key: 'BeginOn'
+                },
+                {
+                    title: '结束时间',
+                    key: 'EndOn'
                 },
                 {
                     title: '地点',
-                    key: 'address'
+                    key: 'Address'
                 },
                 {
                     title: '操作',
                     slot: 'ope'
                 }
             ],
-            LectureData: [
-                {
-                    title: '测试讲座01',
-                    num: 10,
-                    host: '李子桐',
-                    time: '2021年1月11日 12:00:00 - 14:00:00',
-                    address: '报告厅01'
-                },
-                {
-                    title: '测试讲座02',
-                    num: 10,
-                    host: '李子桐',
-                    time: '2021年1月11日 12:00:00 - 14:00:00',
-                    address: '报告厅01'
-                },
-                {
-                    title: '测试讲座03',
-                    num: 10,
-                    host: '李子桐',
-                    time: '2021年1月11日 12:00:00 - 14:00:00',
-                    address: '报告厅01'
-                },
-                {
-                    title: '测试讲座04',
-                    num: 10,
-                    host: '李子桐',
-                    time: '2021年1月11日 12:00:00 - 14:00:00',
-                    address: '报告厅01'
-                },
-                {
-                    title: '测试讲座05',
-                    num: 10,
-                    host: '李子桐',
-                    time: '2021年1月11日 12:00:00 - 14:00:00',
-                    address: '报告厅01'
-                }
-            ]
+            LectureData: [],
+            savingLecture: false,
+            tableLoading: false
         }
     },
+    created () {
+        this.getLecture();
+    },
     methods: {
+        deleteLecture (ID) {
+            this.$Modal.confirm({
+                title: "确认删除",
+                content: "确实要删除本讲座吗？此操作不可恢复。",
+                onOk: () => {
+                    axios.post("/api/activity/RemoveActivityCategory", {id: ID}, msg => {
+                        if (msg.success) {
+                            this.$Message.success("删除成功");
+                        } else {
+                            this.$Message.error(msg.msg);
+                        }
+                    })
+                }
+            })
+        },
+        toDetail (ID) {
+            this.$router.push({name: "SubActivityManager", query: {id: ID}});
+        },
+        getLecture () {
+            this.tableLoading = true;
+            axios.post("/api/activity/GetAcitvities", {}, msg => {
+                this.tableLoading = false;
+                if (msg.success) {
+                    this.LectureData = msg.data;
+                } else {
+                    this.$Message.error(msg.msg);
+                }
+            })
+        },
+        saveLecture () {
+            let form = this.$refs["LectureForm"];
+            form.validate((valid) => {
+                if (valid) {
+                    this.savingLecture = true;
+                    axios.post("/api/activity/SaveActivityCategory", {
+                        ID: this.lecture.id,
+                        Name: this.lecture.title,
+                        BeginOn: this.lecture.beginTime,
+                        EndOn: this.lecture.endTime,
+                        Address: this.lecture.place,
+                        Serial: this.lecture.count,
+                        Hoster: this.lecture.reporter
+                    }, msg => {
+                        this.savingLecture = false;
+                        if (msg.success) {
+                            this.$Message.success("保存成功");
+                            this.showModal = false;
+                        } else {
+                            this.$Message.error(`${msg.msg}：${msg.errors}`);
+                        }
+                    })
+                }
+            })
+        },
+        cancelLecture () {
+            let form = this.$refs["LectureForm"];
+            form.resetFields();
+            this.showModal = false;
+        },
         setKeyword: _.debounce(function () {
             // do nothing
         }, 500),
-        malert: function (i) {
-            if (i === "详情") {
-                this.$router.push({name: "SubActivityManager"});
-                return;
-            }
-            alert(i);
+        modifyLecture (src) {
+            this.lecture.id = src.ID;
+            this.lecture.title = src.Name;
+            this.lecture.beginTime = src.BeginOn;
+            this.lecture.endTime = src.EndOn;
+            this.lecture.place = src.Address;
+            this.lecture.count = src.Serial;
+            this.lecture.reporter = src.Hoster;
+            this.showModal = true;
         }
     }
 }
