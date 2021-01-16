@@ -78,7 +78,7 @@
                             </i-col>
                             <i-col>
                                 <p style="color: rgb(128, 134, 149);">状态</p>
-                                <p style="font-size: 24px;">OK</p>
+                                <p style="font-size: 24px;">{{subLecture.status}}</p>
                             </i-col>
                         </i-row>
                     </i-col>
@@ -307,6 +307,7 @@ export default {
                         this.subLecture.bookingEnd = this.subLectureData[i].SignUpEnd;
                         this.subLecture.availableCount = this.subLectureData[i].SignUpLimit;
                         this.subLecture.place = this.subLectureData[i].Address;
+                        this.subLecture.status = this.subLectureData[i].Status;
                         break;
                     }
                 }
