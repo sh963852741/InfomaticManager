@@ -2,7 +2,7 @@ var _ = require("lodash")
 var axios = require("axios");
 let app = {};
 function broadcast (componentName, eventName, params) {
-    if (!this.$children || this.$children.forEach) {
+    if (!this.$children || !this.$children.forEach) {
         return;
     }
 
