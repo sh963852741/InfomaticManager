@@ -49,13 +49,13 @@
                 </i-row>
                 <i-row type="flex" justify="space-between">
                     <i-col span="6">
-                        <i-form-item label="时间" placeholder="请输入汇报时间">
+                        <i-form-item label="开始时间" placeholder="请输入汇报时间">
                             <i-date-picker style="width: 100%;" v-model="searchCondition.date" type="daterange" separator=" 至 " />
                         </i-form-item>
                     </i-col>
                     <i-col span="6">
                         <i-form-item label="地点" placeholder="请输入讲座地点">
-                            <i-input />
+                            <i-input v-model="searchCondition.addr" />
                         </i-form-item>
                     </i-col>
                     <i-col span="6"/>
@@ -230,6 +230,7 @@ export default {
                     axios.post("/api/activity/RemoveActivityCategory", {id: ID}, msg => {
                         if (msg.success) {
                             this.$Message.success("删除成功");
+                            this.getLecture();
                         } else {
                             this.$Message.error(msg.msg);
                         }
@@ -241,6 +242,10 @@ export default {
             this.$router.push({name: "SubActivityManager", query: {id: ID}});
         },
         getLecture () {
+            if (this.searchCondition.date && this.searchCondition.date[0]) {
+                this.searchCondition.beginOn = this.searchCondition.date[0];
+                this.searchCondition.endOn = this.searchCondition.date[1];
+            }
             this.tableLoading = true;
             axios.post("/api/activity/GetAcitvities", {...this.searchCondition}, msg => {
                 this.tableLoading = false;
@@ -269,6 +274,7 @@ export default {
                         if (msg.success) {
                             this.$Message.success("保存成功");
                             this.showModal = false;
+                            this.getLecture();
                         } else {
                             this.$Message.error(`${msg.msg}：${msg.errors}`);
                         }
@@ -296,6 +302,7 @@ export default {
         },
         clearSearch () {
             this.searchCondition = {};
+            this.getLecture();
         }
     }
 }
