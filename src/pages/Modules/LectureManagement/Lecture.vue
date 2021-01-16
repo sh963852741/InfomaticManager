@@ -7,13 +7,13 @@
                         <i-button @click="showModal = true" type="primary">新建讲座</i-button>
                     </i-col>
                     <i-col span="10">
-                        <i-auto-complete icon="ios-search" @on-change="calcSearchOptions">
+                        <i-auto-complete icon="ios-search" @on-change="calcSearchOptions" @on-select="search">
                             <div class="demo-auto-complete-item" :key="item.title" v-for="item in autoCompleteOptions">
                                 <div class="demo-auto-complete-group">
                                     <span>{{ item.title }}</span>
                                     <!-- <a href="https://www.google.com/search?q=iView" target="_blank">更多</a> -->
                                 </div>
-                                <Option v-for="option in item.children" :value="option" :key="option.title">
+                                <Option v-for="option in item.children" :label="option.title" :value="option" :key="option.title">
                                     <span class="demo-auto-complete-title">{{ option.title }}</span>
                                     <!-- <span class="demo-auto-complete-count">{{ option.count }} 个结果</span> -->
                                 </Option>
@@ -292,9 +292,14 @@ export default {
             this.searchCondition = {};
             this.getLecture();
         },
+        search (obj) {
+            this.searchCondition[obj.category] = obj.title;
+            this.getLecture();
+        },
         calcSearchOptions (value) {
             if (value === "") {
                 this.autoCompleteOptions = [];
+                this.clearSearch();
                 return;
             }
 

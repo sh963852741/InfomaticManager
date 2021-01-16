@@ -84,6 +84,9 @@
                     </i-col>
                 </i-row>
                 <i-tabs value="name2">
+                    <i-tab-pane label="详细介绍" name="name1">
+                        <ueditor :config="config" v-model="lecture.Content" style="width: 100%" />
+                    </i-tab-pane>
                     <i-tab-pane label="报名管理" name="name2">
                         <i-row type="flex" justify="space-between">
                             <i-col>
@@ -123,6 +126,10 @@ const axios = require("axios");
 export default {
     data () {
         return {
+            config: {
+                ...app.ueditor,
+                initialFrameHeight: 800
+            },
             signUpCol: [
                 {
                     title: '姓名',
@@ -212,6 +219,7 @@ export default {
                 }
             ],
             app,
+            lecture: {},
             subLecture: {
                 title: "",
                 count: "",
@@ -227,6 +235,7 @@ export default {
             menuLoading: false,
             savingSubLecture: false,
             subLectureData: [],
+            lectureData: {},
             selected: "",
             activeMenu: "New"
         }
@@ -274,8 +283,8 @@ export default {
             axios.post("/api/activity/GetActivityCategory", {id: lectureId}, msg => {
                 this.menuLoading = false;
                 if (msg.success) {
+                    this.lectureData = msg.data;
                     this.subLectureData = msg.activities;
-                    // alert("sub:" + this.subLectureData.length);
                 } else {
                     this.$Message.error(msg.msg);
                 }
