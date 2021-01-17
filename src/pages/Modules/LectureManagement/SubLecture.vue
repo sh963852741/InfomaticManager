@@ -33,44 +33,49 @@
                             <i-col span="18" id="sub-lecture-detail">
                                 <i-form ref="subLectureForm" label-position="left" :label-width="120" :label-colon="true" :modal="subLecture">
                                     <i-row type="flex" justify="space-between">
-                                        <i-col span="10">
+                                        <i-col span="11">
                                             <i-form-item label="汇报题目" prop="title">
-                                                <i-input size="small" v-model="subLecture.title" />
+                                                <i-input size="default" v-model="subLecture.title" />
                                             </i-form-item>
                                         </i-col>
-                                        <i-col span="10">
+                                        <i-col span="11">
                                             <i-form-item label="讲座期数">
-                                                <i-input size="small" v-model="subLecture.count" />
+                                                <i-input size="default" v-model="subLecture.count" />
                                             </i-form-item>
                                         </i-col>
-                                        <i-col span="10">
+                                        <i-col span="11">
                                             <i-form-item label="汇报人姓名">
-                                                <i-input size="small" v-model="subLecture.reporter" />
+                                                <i-input style="width: 100%;" size="default" v-model="subLecture.reporter" />
                                             </i-form-item>
                                         </i-col>
-                                        <i-col span="10">
-                                            <i-form-item label="汇报时间">
-                                                <i-date-picker style="width: 100%" size="small" v-model="subLecture.time" />
-                                            </i-form-item>
-                                        </i-col>
-                                        <i-col span="10">
+                                        <i-col span="11">
                                             <i-form-item label="汇报地点">
-                                                <i-input size="small" v-model="subLecture.place" />
+                                                <i-input style="width: 100%;" size="default" v-model="subLecture.place" />
                                             </i-form-item>
                                         </i-col>
-                                        <i-col span="10">
+                                        <i-col span="15">
+                                            <i-form-item label="汇报开始时间">
+                                                <i-date-picker style="width: 100%;" size="default" type="datetime" v-model="subLecture.beginOn" />
+                                            </i-form-item>
+                                        </i-col>
+                                        <i-col span="15">
+                                            <i-form-item label="汇报结束时间">
+                                                <i-date-picker style="width: 100%;" size="default" type="datetime" v-model="subLecture.endOn" />
+                                            </i-form-item>
+                                        </i-col>
+                                        <i-col span="15">
                                             <i-form-item label="预约开始时间">
-                                                <i-date-picker style="width: 100%" size="small" v-model="subLecture.bookingBegin" />
+                                                <i-date-picker style="width: 100%;" size="default" type="datetime" v-model="subLecture.bookingBegin" />
                                             </i-form-item>
                                         </i-col>
-                                        <i-col span="10">
+                                        <i-col span="15">
                                             <i-form-item label="预约结束时间">
-                                                <i-date-picker style="width: 100%" size="small" v-model="subLecture.bookingEnd" />
+                                                <i-date-picker style="width: 100%;" size="default" type="datetime" v-model="subLecture.bookingEnd" />
                                             </i-form-item>
                                         </i-col>
-                                        <i-col span="10">
+                                        <i-col span="15">
                                             <i-form-item label="可预约人数">
-                                                <i-input size="small" v-model="subLecture.availableCount" />
+                                                <i-input style="width: 100%;" size="default" v-model="subLecture.availableCount" />
                                             </i-form-item>
                                         </i-col>
                                     </i-row>
@@ -223,13 +228,15 @@ export default {
             ],
             app,
             subLecture: {
+                status: "未知",
                 title: "",
                 count: "",
                 reporter: "",
-                time: "",
+                beginOn: new Date(),
+                endOn: new Date(),
                 place: "",
-                bookingBegin: "",
-                bookingEnd: "",
+                bookingBegin: new Date(),
+                bookingEnd: new Date(),
                 availableCount: "",
                 id: ""
             },
@@ -247,6 +254,8 @@ export default {
     },
     methods: {
         saveSubLecture () {
+            // console.log(this.subLectureData);
+            // console.log(this.subLecture);
             let form = this.$refs["subLectureForm"];
             form.validate((valid) => {
                 if (valid) {
@@ -254,10 +263,10 @@ export default {
                     axios.post("/api/activity/SaveActivity", {
                         ID: this.subLecture.id,
                         Name: this.subLecture.title,
-                        BeginOn: this.subLecture.time,
-                        // EndOn: this.subLecture.endTime,
-                        SignUpBegin: this.subLecture.bookingBegin,
-                        SignUpEnd: this.subLecture.bookingEnd,
+                        BeginOn: this.timeToString(this.subLecture.beginOn),
+                        EndOn: this.timeToString(this.subLecture.endOn),
+                        SignUpBegin: this.timeToString(this.subLecture.bookingBegin),
+                        SignUpEnd: this.timeToString(this.subLecture.bookingEnd),
                         SignUpLimit: this.subLecture.availableCount,
                         Address: this.subLecture.place,
                         Serial: this.subLecture.count,
@@ -311,10 +320,11 @@ export default {
                         this.subLecture.title = this.subLectureData[i].Name;
                         this.subLecture.count = this.subLectureData[i].Serial;
                         this.subLecture.reporter = this.subLectureData[i].Hoster;
-                        this.subLecture.time = this.subLectureData[i].BeginOn;
+                        this.subLecture.beginOn = new Date(this.subLectureData[i].BeginOn.replace(/-/g, '/'));
+                        this.subLecture.endOn = new Date(this.subLectureData[i].EndOn.replace(/-/g, '/'));
                         this.subLecture.id = this.subLectureData[i].ID;
-                        this.subLecture.bookingBegin = this.subLectureData[i].SignUpBegin;
-                        this.subLecture.bookingEnd = this.subLectureData[i].SignUpEnd;
+                        this.subLecture.bookingBegin = new Date(this.subLectureData[i].SignUpBegin.replace(/-/g, '/'));
+                        this.subLecture.bookingEnd = new Date(this.subLectureData[i].SignUpEnd.replace(/-/g, '/'));
                         this.subLecture.availableCount = this.subLectureData[i].SignUpLimit;
                         this.subLecture.place = this.subLectureData[i].Address;
                         this.subLecture.status = this.subLectureData[i].Status;
@@ -324,6 +334,7 @@ export default {
             } else {
                 this.addSubLectureMode = true;
                 this.subLecture = {};
+                this.subLecture.status = "未知";
                 this.signInData = [];
                 this.signUpData = [];
             }
@@ -347,6 +358,43 @@ export default {
                     // location.reload();
                 }
             })
+        },
+        timeToString (date) {
+            // return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+            var y = date.getFullYear();
+            var m = date.getMonth() + 1;
+            var d = date.getDate();
+            var hh = date.getHours();
+            var mm = date.getMinutes();
+            var ss = date.getSeconds();
+            var str = '' + y;
+            if (m < 10) {
+                str = str + '-0' + m;
+            } else {
+                str = str + '-' + m;
+            }
+            if (d < 10) {
+                str = str + '-0' + d;
+            } else {
+                str = str + '-' + d;
+            }
+            if (hh < 10) {
+                str = str + '\u0020' + '0' + hh;
+            } else {
+                str = str + '\u0020' + hh;
+            }
+            if (mm < 10) {
+                str = str + ':0' + mm;
+            } else {
+                str = str + ':' + mm;
+            }
+            if (ss < 10) {
+                str = str + ':0' + ss;
+            } else {
+                str = str + ':' + ss;
+            }
+            str = str + '';
+            return str;
         }
     }
 }
