@@ -7,15 +7,15 @@
                         <i-button @click="showModal = true" type="primary">新建讲座</i-button>
                     </i-col>
                     <i-col span="10">
-                        <i-auto-complete icon="ios-search">
+                        <i-auto-complete icon="ios-search" @on-change="calcSearchOptions" @on-select="search">
                             <div class="demo-auto-complete-item" :key="item.title" v-for="item in autoCompleteOptions">
                                 <div class="demo-auto-complete-group">
                                     <span>{{ item.title }}</span>
                                     <!-- <a href="https://www.google.com/search?q=iView" target="_blank">更多</a> -->
                                 </div>
-                                <Option v-for="option in item.children" :value="option.title" :key="option.title">
+                                <Option v-for="option in item.children" :label="option.title" :value="option" :key="option.title">
                                     <span class="demo-auto-complete-title">{{ option.title }}</span>
-                                    <span class="demo-auto-complete-count">{{ option.count }} 个结果</span>
+                                    <!-- <span class="demo-auto-complete-count">{{ option.count }} 个结果</span> -->
                                 </Option>
                             </div>
                         </i-auto-complete>
@@ -32,30 +32,30 @@
             <i-form v-show="advanceSearch" label-position="top">
                 <i-row type="flex" justify="space-between">
                     <i-col span="6">
-                        <i-form-item label="期数" placeholder="请输入讲座期数">
-                            <i-input v-model="searchCondition.serial" />
+                        <i-form-item label="期数">
+                            <i-input v-model="searchCondition.serial" placeholder="请输入讲座期数" />
                         </i-form-item>
                     </i-col>
                     <i-col span="6">
-                        <i-form-item label="题目" placeholder="请输入讲座题目">
-                            <i-input v-model="searchCondition.name" />
+                        <i-form-item label="题目">
+                            <i-input v-model="searchCondition.name" placeholder="请输入讲座题目"/>
                         </i-form-item>
                     </i-col>
                     <i-col span="6">
-                        <i-form-item label="汇报人" placeholder="请输入汇报人姓名">
-                            <i-input v-model="searchCondition.hoster" />
+                        <i-form-item label="汇报人">
+                            <i-input v-model="searchCondition.hoster" placeholder="请输入汇报人姓名"/>
                         </i-form-item>
                     </i-col>
                 </i-row>
                 <i-row type="flex" justify="space-between">
                     <i-col span="6">
-                        <i-form-item label="时间" placeholder="请输入汇报时间">
-                            <i-date-picker style="width: 100%;" v-model="searchCondition.date" type="daterange" separator=" 至 " />
+                        <i-form-item label="开始时间">
+                            <i-date-picker style="width: 100%;" v-model="searchCondition.date" separator=" 至 " placeholder="请输入讲座开始时间范围"/>
                         </i-form-item>
                     </i-col>
                     <i-col span="6">
-                        <i-form-item label="地点" placeholder="请输入讲座地点">
-                            <i-input />
+                        <i-form-item label="地点">
+                            <i-input v-model="searchCondition.addr" placeholder="请输入讲座地点"/>
                         </i-form-item>
                     </i-col>
                     <i-col span="6"/>
@@ -92,10 +92,22 @@
                 <i-form-item label="汇报人" prop="reporter">
                     <i-input v-model="lecture.reporter" />
                 </i-form-item>
-                <i-form-item label="开始时间">
+                <i-form-item>
+                    <template slot="label">
+                        开始时间
+                        <Tooltip content="最早开始的讲座的开始时间">
+                            <Icon type="md-help-circle" color="#2db7f5" />
+                        </Tooltip>
+                    </template>
                     <i-date-picker v-model="lecture.beginTime" style="width: 100%"/>
                 </i-form-item>
                 <i-form-item label="结束时间">
+                    <template slot="label">
+                        结束时间
+                        <Tooltip content="最晚结束的讲座的结束时间">
+                            <Icon type="md-help-circle" color="#2db7f5" />
+                        </Tooltip>
+                    </template>
                     <i-date-picker v-model="lecture.endTime" style="width: 100%"/>
                 </i-form-item>
                 <i-form-item label="地点" prop="place">
@@ -117,31 +129,7 @@ export default {
     data () {
         return {
             advanceSearch: false,
-            autoCompleteOptions: [
-                {
-                    title: "地点",
-                    children: [
-                        {
-                            title: "科研1",
-                            count: 10
-                        }, {
-                            title: "实验室2",
-                            count: 10
-                        }
-                    ]
-                }, {
-                    title: "讲座名",
-                    children: [
-                        {
-                            title: "科研纪要",
-                            count: 10
-                        }, {
-                            title: "XXXX",
-                            count: 10
-                        }
-                    ]
-                }
-            ],
+            autoCompleteOptions: [],
             lecture: {
                 id: "",
                 title: "",
@@ -242,6 +230,10 @@ export default {
             this.$router.push({name: "SubActivityManager", query: {id: ID}});
         },
         getLecture () {
+            if (this.searchCondition.date && this.searchCondition.date[0]) {
+                this.searchCondition.beginOn = this.searchCondition.date[0];
+                this.searchCondition.endOn = this.searchCondition.date[1];
+            }
             this.tableLoading = true;
             axios.post("/api/activity/GetAcitvities", {...this.searchCondition}, msg => {
                 this.tableLoading = false;
@@ -298,6 +290,64 @@ export default {
         },
         clearSearch () {
             this.searchCondition = {};
+            this.getLecture();
+        },
+        search (obj) {
+            this.searchCondition[obj.category] = obj.title;
+            this.getLecture();
+        },
+        calcSearchOptions (value) {
+            if (value === "") {
+                this.autoCompleteOptions = [];
+                this.clearSearch();
+                return;
+            }
+
+            let options = [];
+
+            /* 是科研楼 */
+            if (value.startsWith('科研')) {
+                let category = "place";
+                let tmp = {
+                    title: "地点",
+                    children: []
+                }
+                tmp.children.push({
+                    title: "科研1",
+                    category
+                })
+                tmp.children.push({
+                    title: "科研2",
+                    category
+                })
+                options.push(tmp);
+            }
+
+            /* 是教学楼 */
+            if (value.startsWith('教学')) {
+                let category = "place";
+                let tmp = {
+                    title: "地点",
+                    children: []
+                }
+                tmp.children.push({
+                    title: "教学楼",
+                    category
+                })
+                options.push(tmp);
+            }
+
+            let tmp = {
+                    title: "讲座名",
+                    children: []
+                }
+                tmp.children.push({
+                    title: value,
+                    category: "name"
+                });
+            options.push(tmp);
+
+            this.autoCompleteOptions = options;
         }
     }
 }

@@ -89,6 +89,12 @@
                     </i-col>
                 </i-row>
                 <i-tabs value="name2">
+                    <i-tab-pane label="详细介绍" name="name1">
+                        <Alert>此处为母讲座的介绍</Alert>
+                        <i-button @click="saveIntroduction" style="margin-bottom: 8px" type="primary">保存</i-button>
+                        <ueditor :config="config" v-model="lectureData.Content" style="width: 100%" />
+                        <i-button @click="saveIntroduction" style="margin-top: 8px" type="primary">保存</i-button>
+                    </i-tab-pane>
                     <i-tab-pane label="报名管理" name="name2">
                         <i-row type="flex" justify="space-between">
                             <i-col>
@@ -128,6 +134,10 @@ const axios = require("axios");
 export default {
     data () {
         return {
+            config: {
+                ...app.ueditor,
+                initialFrameHeight: 800
+            },
             signUpCol: [
                 {
                     title: '姓名',
@@ -234,6 +244,7 @@ export default {
             menuLoading: false,
             savingSubLecture: false,
             subLectureData: [],
+            lectureData: {},
             selected: "",
             activeMenu: "New"
         }
@@ -276,15 +287,23 @@ export default {
                     })
                 }
             })
-            // location.reload();
+        },
+        saveIntroduction () {
+            axios.postStream("/api/activity/SaveActivityCategory", this.lectureData, msg => {
+                if (msg.success) {
+                    this.$Message.success("已保存母讲座简介");
+                } else {
+                    this.$Message.error(msg.msg);
+                }
+            })
         },
         getSubLectures (lectureId) {
             this.menuLoading = true;
             axios.post("/api/activity/GetActivityCategory", {id: lectureId}, msg => {
                 this.menuLoading = false;
                 if (msg.success) {
+                    this.lectureData = msg.data;
                     this.subLectureData = msg.activities;
-                    // alert("sub:" + this.subLectureData.length);
                 } else {
                     this.$Message.error(msg.msg);
                 }
