@@ -35,47 +35,48 @@
                                     <i-row type="flex" justify="space-between">
                                         <i-col span="11">
                                             <i-form-item label="汇报题目" prop="title">
-                                                <i-input size="default" v-model="subLecture.title" />
+                                                <i-input size="small" v-model="subLecture.title" />
                                             </i-form-item>
                                         </i-col>
                                         <i-col span="11">
                                             <i-form-item label="讲座期数">
-                                                <i-input size="default" v-model="subLecture.count" />
+                                                <i-input size="small" v-model="subLecture.count" />
                                             </i-form-item>
                                         </i-col>
                                         <i-col span="11">
                                             <i-form-item label="汇报人姓名">
-                                                <i-input style="width: 100%;" size="default" v-model="subLecture.reporter" />
+                                                <i-input size="small" v-model="subLecture.reporter" />
                                             </i-form-item>
                                         </i-col>
                                         <i-col span="11">
                                             <i-form-item label="汇报地点">
-                                                <i-input style="width: 100%;" size="default" v-model="subLecture.place" />
+                                                <i-input size="small" v-model="subLecture.place" />
                                             </i-form-item>
                                         </i-col>
-                                        <i-col span="15">
+                                        <i-col span="11">
                                             <i-form-item label="汇报开始时间">
-                                                <i-date-picker style="width: 100%;" size="default" type="datetime" v-model="subLecture.beginOn" />
+                                                <i-date-picker style="width: 100%;" size="small" type="datetime" v-model="subLecture.beginOn" />
                                             </i-form-item>
                                         </i-col>
-                                        <i-col span="15">
+                                        <i-col span="11">
                                             <i-form-item label="汇报结束时间">
-                                                <i-date-picker style="width: 100%;" size="default" type="datetime" v-model="subLecture.endOn" />
+                                                <i-date-picker style="width: 100%;" size="small" type="datetime" v-model="subLecture.endOn" />
                                             </i-form-item>
                                         </i-col>
-                                        <i-col span="15">
+                                        <Divider dashed style="margin: 0px 0px 16px 0px" />
+                                        <i-col span="11">
                                             <i-form-item label="预约开始时间">
-                                                <i-date-picker style="width: 100%;" size="default" type="datetime" v-model="subLecture.bookingBegin" />
+                                                <i-date-picker style="width: 100%;" size="small" type="datetime" v-model="subLecture.bookingBegin" />
                                             </i-form-item>
                                         </i-col>
-                                        <i-col span="15">
+                                        <i-col span="11">
                                             <i-form-item label="预约结束时间">
-                                                <i-date-picker style="width: 100%;" size="default" type="datetime" v-model="subLecture.bookingEnd" />
+                                                <i-date-picker style="width: 100%;" size="small" type="datetime" v-model="subLecture.bookingEnd" />
                                             </i-form-item>
                                         </i-col>
-                                        <i-col span="15">
+                                        <i-col span="11">
                                             <i-form-item label="可预约人数">
-                                                <i-input style="width: 100%;" size="default" v-model="subLecture.availableCount" />
+                                                <i-input size="small" v-model="subLecture.availableCount" />
                                             </i-form-item>
                                         </i-col>
                                     </i-row>
@@ -136,7 +137,7 @@ export default {
         return {
             config: {
                 ...app.ueditor,
-                initialFrameHeight: 800
+                initialFrameHeight: 600
             },
             signUpCol: [
                 {
