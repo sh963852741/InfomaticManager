@@ -50,7 +50,7 @@
                                         </i-col>
                                         <i-col span="10">
                                             <i-form-item label="汇报时间">
-                                                <i-date-picker size="small" v-model="subLecture.time" />
+                                                <i-date-picker style="width: 100%" size="small" v-model="subLecture.time" />
                                             </i-form-item>
                                         </i-col>
                                         <i-col span="10">
@@ -60,12 +60,12 @@
                                         </i-col>
                                         <i-col span="10">
                                             <i-form-item label="预约开始时间">
-                                                <i-date-picker size="small" v-model="subLecture.bookingBegin" />
+                                                <i-date-picker style="width: 100%" size="small" v-model="subLecture.bookingBegin" />
                                             </i-form-item>
                                         </i-col>
                                         <i-col span="10">
                                             <i-form-item label="预约结束时间">
-                                                <i-date-picker size="small" v-model="subLecture.bookingEnd" />
+                                                <i-date-picker style="width: 100%" size="small" v-model="subLecture.bookingEnd" />
                                             </i-form-item>
                                         </i-col>
                                         <i-col span="10">
@@ -85,7 +85,10 @@
                 </i-row>
                 <i-tabs value="name2">
                     <i-tab-pane label="详细介绍" name="name1">
-                        <ueditor :config="config" v-model="lecture.Content" style="width: 100%" />
+                        <Alert>此处为母讲座的介绍</Alert>
+                        <i-button @click="saveIntroduction" style="margin-bottom: 8px" type="primary">保存</i-button>
+                        <ueditor :config="config" v-model="lectureData.Content" style="width: 100%" />
+                        <i-button @click="saveIntroduction" style="margin-top: 8px" type="primary">保存</i-button>
                     </i-tab-pane>
                     <i-tab-pane label="报名管理" name="name2">
                         <i-row type="flex" justify="space-between">
@@ -219,7 +222,6 @@ export default {
                 }
             ],
             app,
-            lecture: {},
             subLecture: {
                 title: "",
                 count: "",
@@ -276,7 +278,15 @@ export default {
                     })
                 }
             })
-            // location.reload();
+        },
+        saveIntroduction () {
+            axios.postStream("/api/activity/SaveActivityCategory", this.lectureData, msg => {
+                if (msg.success) {
+                    this.$Message.success("已保存母讲座简介");
+                } else {
+                    this.$Message.error(msg.msg);
+                }
+            })
         },
         getSubLectures (lectureId) {
             this.menuLoading = true;
