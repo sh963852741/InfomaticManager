@@ -290,7 +290,7 @@ export default {
             })
         },
         saveIntroduction () {
-            axios.postStream("/api/activity/SaveActivityCategory", this.lectureData, msg => {
+            axios.post("/api/activity/SaveActivityCategory", this.lectureData, msg => {
                 if (msg.success) {
                     this.$Message.success("已保存母讲座简介");
                 } else {
