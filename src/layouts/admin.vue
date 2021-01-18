@@ -37,8 +37,12 @@
                                 <DropdownMenu slot="list"></DropdownMenu>
                             </Dropdown>
                         </i-col> -->
+                        <!-- <i-col span="3">
+                            <Button @click="changeNotice">变更通知</Button>
+                        </i-col> -->
                         <i-col span="1">
-                            <Icon :style="[{margin: '0 5px'},{cursor: 'pointer'}]" @click="$Message.info('功能开发中，敬请期待');" type="md-notifications-outline" size="24"></Icon>
+                            <!-- <Icon :style="[{margin: '0 5px'},{cursor: 'pointer'}]" @click="$Message.info('功能开发中，敬请期待');" type="md-notifications-outline" size="24"></Icon> -->
+                            <Notices :notices="notices" @clear="clearNotice" />
                         </i-col>
                         <i-col span="4">
                             <Dropdown trigger="click">
@@ -85,11 +89,12 @@
 <script>
 import { Layout, Sider, Menu, MenuItem, Header, Icon, Content, Affix, Submenu } from 'view-design'
 import Axios from 'axios';
+import Notices from './components/notices'
 let signalR = require("@/api/signalR").default;
 const app = require('@/config')
 export default {
     name: "admin-layout",
-    components: { Layout, Sider, Menu, MenuItem, Header, Icon, Content, Affix, Submenu },
+    components: { Layout, Sider, Menu, MenuItem, Header, Icon, Content, Affix, Submenu, Notices },
     created () {
         signalR.ready(msg => {
             signalR.resetUserId(app.userInfo.token);
@@ -153,6 +158,17 @@ export default {
                 }
                 // this.$router.push({ name: "Login" });
             })
+        },
+        clearNotice () {
+            // alert("clear");
+            this.notices = [];
+        },
+        changeNotice () {
+            this.notices.push({
+                title: "通知02",
+                icon: "ios-alert-outline",
+                detail: ""
+            });
         }
     },
     data () {
@@ -162,7 +178,19 @@ export default {
             isCollapsed: false,
             menus: app.menus,
             openMenus: [],
-            activeMenu: ""
+            activeMenu: "",
+            notices: [
+                {
+                    title: "通知01000000",
+                    icon: "ios-alert",
+                    detail: ""
+                },
+                {
+                    title: "通知02",
+                    icon: "ios-alert-outline",
+                    detail: ""
+                }
+            ]
         }
     },
     watch: {

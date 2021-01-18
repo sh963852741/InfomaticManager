@@ -287,7 +287,7 @@ export default {
         toLabDetail (ID) {
             this.$router.push({ name: "LabManager", query: { ID } });
         },
-       setFilter (key, value, displayKey, displayValue) {
+        setFilter (key, value, displayKey, displayValue) {
             let f = this.filters.findIndex(e => e.key === key);
             if (f > -1) {
                 this.filters.splice(f, 1);
