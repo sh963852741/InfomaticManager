@@ -20,8 +20,8 @@ export default {
         connected (connId) {
             window._console.log(`已成功连接服务器 -> ${connId}`);
         },
-        debugCMsg (msg) {
-            window._console.log(`成功接收服务器下发的测试信息：${msg}`);
+        debugCMsg (msg, imgUrl, type) {
+            window._console.log(`成功接收服务器下发的测试信息：${msg}, ${imgUrl}`);
         },
         showAlert (msg) {
             alert(msg);
@@ -39,7 +39,6 @@ export default {
         loginSuccess (currentUserGuid) {
             app.currentUserGuid = currentUserGuid;
             localStorage.currentUserGuid = currentUserGuid;
-
             let path = document.location.href;
             let arrUrl = path.split("//");
             let start = arrUrl[1].indexOf("/");
