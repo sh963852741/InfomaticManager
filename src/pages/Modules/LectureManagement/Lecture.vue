@@ -94,24 +94,27 @@
                 </i-form-item>
                 <i-form-item>
                     <template slot="label">
-                        开始时间
-                        <Tooltip content="最早开始的讲座的开始时间">
+                        讲座时间
+                        <Tooltip content="包含所有子讲座的时间范围">
                             <Icon type="md-help-circle" color="#2db7f5" />
                         </Tooltip>
                     </template>
-                    <i-date-picker v-model="lecture.beginTime" style="width: 100%"/>
-                </i-form-item>
-                <i-form-item label="结束时间">
-                    <template slot="label">
-                        结束时间
-                        <Tooltip content="最晚结束的讲座的结束时间">
-                            <Icon type="md-help-circle" color="#2db7f5" />
-                        </Tooltip>
-                    </template>
-                    <i-date-picker v-model="lecture.endTime" style="width: 100%"/>
+                    <i-date-picker v-model="lecture.time" type="daterange" style="width: 100%"/>
                 </i-form-item>
                 <i-form-item label="地点" prop="place">
                     <i-input v-model="lecture.place" />
+                </i-form-item>
+                <i-form-item>
+                    <template slot="label">
+                        预约时间
+                        <Tooltip content="此时间段内讲座可被预约">
+                            <Icon type="md-help-circle" color="#2db7f5"/>
+                        </Tooltip>
+                    </template>
+                    <i-date-picker v-model="lecture.reservationTime" format="yyyy-MM-dd HH:mm" type="datetimerange" style="width: 100%"/>
+                </i-form-item>
+                <i-form-item label="可预约人数" prop="reservation">
+                    <i-input-number v-model="lecture.reservation" style="width: 100%"/>
                 </i-form-item>
             </i-form>
             <template slot="footer">
@@ -210,6 +213,23 @@ export default {
         this.getLecture();
     },
     methods: {
+        timeFormatter (date, fmt = "yyyy-MM-dd hh:mm:ss") {
+            date = new Date(date);
+            let o = {
+                "M+": date.getMonth() + 1, // 月份
+                "d+": date.getDate(), // 日
+                "h+": date.getHours(), // 小时
+                "m+": date.getMinutes(), // 分
+                "s+": date.getSeconds(), // 秒
+                "q+": Math.floor((date.getMonth() + 3) / 3), // 季度
+                "S": date.getMilliseconds() // 毫秒
+            };
+            if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o) {
+                if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            }
+            return fmt;
+        },
         deleteLecture (ID) {
             this.$Modal.confirm({
                 title: "确认删除",
@@ -252,11 +272,14 @@ export default {
                     axios.post("/api/activity/SaveActivityCategory", {
                         ID: this.lecture.id,
                         Name: this.lecture.title,
-                        BeginOn: this.lecture.beginTime,
-                        EndOn: this.lecture.endTime,
+                        BeginOn: this.lecture.time[0],
+                        EndOn: this.lecture.time[1],
+                        SignUpBegin: this.timeFormatter(this.lecture.reservationTime[0]),
+                        SignUpEnd: this.timeFormatter(this.lecture.reservationTime[1]),
                         Address: this.lecture.place,
                         Serial: this.lecture.count,
-                        Hoster: this.lecture.reporter
+                        Hoster: this.lecture.reporter,
+                        SignUpLimit: this.lecture.reservation
                     }, msg => {
                         this.savingLecture = false;
                         if (msg.success) {
@@ -281,11 +304,12 @@ export default {
         modifyLecture (src) {
             this.lecture.id = src.ID;
             this.lecture.title = src.Name;
-            this.lecture.beginTime = src.BeginOn;
-            this.lecture.endTime = src.EndOn;
+            this.lecture.time = [src.BeginOn, src.EndOn];
+            this.lecture.reservationTime = [src.SignUpBegin, src.SignUpEnd];
             this.lecture.place = src.Address;
             this.lecture.count = src.Serial;
             this.lecture.reporter = src.Hoster;
+            this.lecture.reservation = src.SignUpLimit;
             this.showModal = true;
         },
         clearSearch () {
