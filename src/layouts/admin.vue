@@ -181,14 +181,16 @@ export default {
             activeMenu: "",
             notices: [
                 {
-                    title: "通知01000000",
+                    title: "通知通知通知通知通知通知通知通知通知通知通知通知通知通知通知通知通知通知通知通知通知通知通知",
                     icon: "ios-alert",
-                    detail: ""
+                    detail: "",
+                    time: "2021年1月19日 21:00:00"
                 },
                 {
                     title: "通知02",
                     icon: "ios-alert-outline",
-                    detail: ""
+                    detail: "",
+                    time: "2021年1月19日 21:00:00"
                 }
             ]
         }
