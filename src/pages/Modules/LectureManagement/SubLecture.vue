@@ -10,7 +10,7 @@
                 <i-menu-item name="3">光的传播</i-menu-item>
                 <i-menu-item name="4">光的色散</i-menu-item>
                 <i-menu-item name="5">波粒二象性</i-menu-item> -->
-                <i-menu-item v-for="tmp in subLectureData" :key= tmp.ID :name = tmp.ID>{{tmp.Name}}</i-menu-item>
+                <i-menu-item v-for="(tmp, index) in subLectureData" :key="tmp.ID" :name="index">{{tmp.Name}}</i-menu-item>
             </i-menu>
         </i-col>
         <i-col span="20">
@@ -106,7 +106,11 @@
                             </i-col>
                         </i-row>
                         <i-row class="table-margin">
-                            <Table stripe :columns="signUpCol" :data="signUpData"></Table>
+                            <Table stripe :columns="signUpCol" :data="signUpData">
+                                <template slot="State" slot-scope="{row}">
+                                    {{row.State}}
+                                </template>
+                            </Table>
                         </i-row>
                     </i-tab-pane>
                     <i-tab-pane label="签到管理" name="name3">
@@ -142,47 +146,26 @@ export default {
             signUpCol: [
                 {
                     title: '姓名',
-                    key: 'name'
+                    key: 'RealName'
                 },
                 {
-                    title: '学号',
-                    key: 'number'
-                },
-                {
-                    title: '联系方式',
-                    key: 'communicate'
+                    title: '手机号',
+                    key: 'Mobile'
                 },
                 {
                     title: '报名时间',
-                    key: 'signUpTime'
+                    key: 'SignUpOn'
+                },
+                {
+                    title: '邮箱',
+                    key: 'Email'
+                },
+                {
+                    title: '状态',
+                    slot: 'State'
                 }
             ],
-            signUpData: [
-                {
-                    name: '李子桐',
-                    number: '22920192203999',
-                    communicate: '15103128777',
-                    signUpTime: '2021年1月12日 12:00:00'
-                },
-                {
-                    name: '李子桐',
-                    number: '22920192203999',
-                    communicate: '15103128777',
-                    signUpTime: '2021年1月12日 12:00:00'
-                },
-                {
-                    name: '李子桐',
-                    number: '22920192203999',
-                    communicate: '15103128777',
-                    signUpTime: '2021年1月12日 12:00:00'
-                },
-                {
-                    name: '李子桐',
-                    number: '22920192203999',
-                    communicate: '15103128777',
-                    signUpTime: '2021年1月12日 12:00:00'
-                }
-            ],
+            signUpData: [],
             signInCol: [
                 {
                     title: '姓名',
@@ -199,32 +182,6 @@ export default {
                 {
                     title: '签到时间',
                     key: 'signInTime'
-                }
-            ],
-            signInData: [
-                {
-                    name: '李子桐',
-                    number: '22920192203999',
-                    communicate: '15103128777',
-                    signInTime: '2021年1月12日 12:00:00'
-                },
-                {
-                    name: '李子桐',
-                    number: '22920192203999',
-                    communicate: '15103128777',
-                    signInTime: '2021年1月12日 12:00:00'
-                },
-                {
-                    name: '李子桐',
-                    number: '22920192203999',
-                    communicate: '15103128777',
-                    signInTime: '2021年1月12日 12:00:00'
-                },
-                {
-                    name: '李子桐',
-                    number: '22920192203999',
-                    communicate: '15103128777',
-                    signInTime: '2021年1月12日 12:00:00'
                 }
             ],
             app,
@@ -247,16 +204,25 @@ export default {
             subLectureData: [],
             lectureData: {},
             selected: "",
-            activeMenu: "New"
+            activeMenu: "New",
+            signInData: []
         }
     },
     created () {
         this.getSubLectures(this.$route.query.id);
     },
     methods: {
+        /* 获取报名状态 */
+        getLectureSignUp (lectureId) {
+            axios.post("/api/activity/GetSignUps", {id: lectureId}, msg => {
+                if (msg.success) {
+                    this.signUpData = msg.data;
+                } else {
+                    this.$Message.error(msg.msg);
+                }
+            })
+        },
         saveSubLecture () {
-            // console.log(this.subLectureData);
-            // console.log(this.subLecture);
             let form = this.$refs["subLectureForm"];
             form.validate((valid) => {
                 if (valid) {
@@ -305,33 +271,29 @@ export default {
                 if (msg.success) {
                     this.lectureData = msg.data;
                     this.subLectureData = msg.activities;
+                    this.getLectureSignUp(lectureId);
                 } else {
                     this.$Message.error(msg.msg);
                 }
             })
         },
-        getSubLecture (lectureId) {
-            // var lectureId = this.selected;
-            // console.log("selected: " + lectureId);
-            if (lectureId !== "New") {
+        getSubLecture (index) {
+            if (index !== "New") {
                 this.addSubLectureMode = false;
-                var i = 0;
-                for (i = 0; i < this.subLectureData.length; i++) {
-                    if (this.subLectureData[i].ID === lectureId) {
-                        this.subLecture.title = this.subLectureData[i].Name;
-                        this.subLecture.count = this.subLectureData[i].Serial;
-                        this.subLecture.reporter = this.subLectureData[i].Hoster;
-                        this.subLecture.beginOn = new Date(this.subLectureData[i].BeginOn.replace(/-/g, '/'));
-                        this.subLecture.endOn = new Date(this.subLectureData[i].EndOn.replace(/-/g, '/'));
-                        this.subLecture.id = this.subLectureData[i].ID;
-                        this.subLecture.bookingBegin = new Date(this.subLectureData[i].SignUpBegin.replace(/-/g, '/'));
-                        this.subLecture.bookingEnd = new Date(this.subLectureData[i].SignUpEnd.replace(/-/g, '/'));
-                        this.subLecture.availableCount = this.subLectureData[i].SignUpLimit;
-                        this.subLecture.place = this.subLectureData[i].Address;
-                        this.subLecture.status = this.subLectureData[i].Status;
-                        break;
-                    }
-                }
+
+                this.subLecture.title = this.subLectureData[index].Name;
+                this.subLecture.count = this.subLectureData[index].Serial;
+                this.subLecture.reporter = this.subLectureData[index].Hoster;
+                this.subLecture.beginOn = new Date(this.subLectureData[index].BeginOn.replace(/-/g, '/'));
+                this.subLecture.endOn = new Date(this.subLectureData[index].EndOn.replace(/-/g, '/'));
+                this.subLecture.id = this.subLectureData[index].ID;
+                this.subLecture.bookingBegin = new Date(this.subLectureData[index].SignUpBegin.replace(/-/g, '/'));
+                this.subLecture.bookingEnd = new Date(this.subLectureData[index].SignUpEnd.replace(/-/g, '/'));
+                this.subLecture.availableCount = this.subLectureData[index].SignUpLimit;
+                this.subLecture.place = this.subLectureData[index].Address;
+                this.subLecture.status = this.subLectureData[index].Status;
+
+                this.getSubLectureSingIn(this.subLecture.id);
             } else {
                 this.addSubLectureMode = true;
                 this.subLecture = {};
@@ -339,6 +301,15 @@ export default {
                 this.signInData = [];
                 this.signUpData = [];
             }
+        },
+        getSubLectureSingIn (subLectureId) {
+            axios.post("/api/activity/GetSignIns", {id: subLectureId}, msg => {
+                if (msg.success) {
+                    this.signInData = msg.data;
+                } else {
+                    this.$Message.error(msg.msg);
+                }
+            })
         },
         deleteSubLecture () {
             this.$Modal.confirm({
@@ -349,8 +320,6 @@ export default {
                         if (msg.success) {
                             this.$Message.success("删除成功");
                             this.getSubLectures(this.$route.query.id);
-                            // this.activeMenu = this.subLectureData[0].ID;
-                            // this.getSubLecture(this.subLectureData[0].ID);
                             this.$router.go(0)
                         } else {
                             this.$Message.error(msg.msg);
