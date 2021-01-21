@@ -63,7 +63,7 @@
                                                 <i-date-picker style="width: 100%;" size="small" type="datetime" v-model="subLecture.endOn" />
                                             </i-form-item>
                                         </i-col>
-                                        <!-- <Divider dashed style="margin: 0px 0px 16px 0px" />
+                                        <Divider dashed style="margin: 0px 0px 16px 0px" />
                                         <i-col span="11">
                                             <i-form-item label="预约开始时间">
                                                 <i-date-picker style="width: 100%;" size="small" type="datetime" v-model="subLecture.bookingBegin" />
@@ -78,7 +78,7 @@
                                             <i-form-item label="可预约人数">
                                                 <i-input size="small" v-model="subLecture.availableCount" />
                                             </i-form-item>
-                                        </i-col> -->
+                                        </i-col>
                                     </i-row>
                                 </i-form>
                             </i-col>
@@ -169,19 +169,23 @@ export default {
             signInCol: [
                 {
                     title: '姓名',
-                    key: 'name'
+                    key: 'RealName'
                 },
                 {
                     title: '学号',
-                    key: 'number'
+                    key: 'Code'
                 },
                 {
-                    title: '联系方式',
-                    key: 'communicate'
+                    title: '手机号',
+                    key: 'Mobile'
+                },
+                {
+                    title: '邮箱',
+                    key: 'Email'
                 },
                 {
                     title: '签到时间',
-                    key: 'signInTime'
+                    key: 'SignInOn'
                 }
             ],
             app,
