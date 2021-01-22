@@ -25,7 +25,7 @@
                                 <span class="head-title">子讲座信息：{{subLecture.title ? subLecture.title : "&lt;请输入讲座题目&gt;"}}</span>
                             </i-col>
                             <i-col>
-                                <i-button icon="md-create" type="primary" @click="saveSubLecture">{{addSubLectureMode ? "确认新建" : "确认修改"}}</i-button>
+                                <i-button icon="md-create" type="primary" :loading="savingSubLecture" @click="saveSubLecture">{{addSubLectureMode ? "确认新建" : "确认修改"}}</i-button>
                                 <i-button type="error" icon="md-trash" :disabled="addSubLectureMode || this.subLectureData.length <= 1" @click="deleteSubLecture">删除子讲座</i-button>
                             </i-col>
                         </i-row>
@@ -63,7 +63,7 @@
                                                 <i-date-picker style="width: 100%;" size="small" type="datetime" v-model="subLecture.endOn" />
                                             </i-form-item>
                                         </i-col>
-                                        <Divider dashed style="margin: 0px 0px 16px 0px" />
+                                        <!-- <Divider dashed style="margin: 0px 0px 16px 0px" />
                                         <i-col span="11">
                                             <i-form-item label="预约开始时间">
                                                 <i-date-picker style="width: 100%;" size="small" type="datetime" v-model="subLecture.bookingBegin" />
@@ -78,7 +78,7 @@
                                             <i-form-item label="可预约人数">
                                                 <i-input size="small" v-model="subLecture.availableCount" />
                                             </i-form-item>
-                                        </i-col>
+                                        </i-col> -->
                                     </i-row>
                                 </i-form>
                             </i-col>
@@ -108,7 +108,7 @@
                         <i-row class="table-margin">
                             <Table stripe :columns="signUpCol" :data="signUpData">
                                 <template slot="State" slot-scope="{row}">
-                                    {{row.State}}
+                                    {{signUpStateDic[row.State]}}
                                 </template>
                             </Table>
                         </i-row>
@@ -139,6 +139,10 @@ const axios = require("axios");
 export default {
     data () {
         return {
+            signUpStateDic: {
+                999: "取消报名",
+                0: "已报名"
+            },
             config: {
                 ...app.ueditor,
                 initialFrameHeight: 600
@@ -236,15 +240,15 @@ export default {
                         Name: this.subLecture.title,
                         BeginOn: this.timeToString(this.subLecture.beginOn),
                         EndOn: this.timeToString(this.subLecture.endOn),
-                        SignUpBegin: this.timeToString(this.subLecture.bookingBegin),
-                        SignUpEnd: this.timeToString(this.subLecture.bookingEnd),
-                        SignUpLimit: this.subLecture.availableCount,
+                        SignUpBegin: this.lectureData.SignUpBegin,
+                        SignUpEnd: this.lectureData.SignUpEnd,
+                        SignUpLimit: this.lectureData.SignUpLimit,
                         Address: this.subLecture.place,
                         Serial: this.subLecture.count,
                         Hoster: this.subLecture.reporter,
                         CategoryId: this.$route.query.id
                     }, msg => {
-                        this.savingLecture = false;
+                        this.savingSubLecture = false;
                         if (msg.success) {
                             this.$Message.success("保存成功");
                             this.showModal = false;
@@ -282,7 +286,7 @@ export default {
             })
         },
         getSubLecture (index) {
-            if (index !== "New") {
+            if (typeof index === "number") {
                 this.addSubLectureMode = false;
 
                 this.subLecture.title = this.subLectureData[index].Name;
@@ -298,7 +302,7 @@ export default {
                 this.subLecture.status = this.subLectureData[index].Status;
 
                 this.getSubLectureSingIn(this.subLecture.id);
-            } else {
+            } else if (index === "New") {
                 this.addSubLectureMode = true;
                 this.subLecture = {};
                 this.subLecture.status = "未知";
