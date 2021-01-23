@@ -269,7 +269,7 @@ export default {
             form.validate((valid) => {
                 if (valid) {
                     this.savingLecture = true;
-                    axios.post("/api/activity/SaveActivityCategory", {
+                    axios.postStream("/api/activity/SaveActivityCategory", {
                         ID: this.lecture.id,
                         Name: this.lecture.title,
                         BeginOn: this.lecture.time[0],

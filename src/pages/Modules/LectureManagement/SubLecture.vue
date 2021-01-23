@@ -235,7 +235,7 @@ export default {
             form.validate((valid) => {
                 if (valid) {
                     this.savingSubLecture = true;
-                    axios.post("/api/activity/SaveActivity", {
+                    axios.postStream("/api/activity/SaveActivity", {
                         ID: this.subLecture.id,
                         Name: this.subLecture.title,
                         BeginOn: this.timeToString(this.subLecture.beginOn),
@@ -264,7 +264,7 @@ export default {
             })
         },
         saveIntroduction () {
-            axios.post("/api/activity/SaveActivityCategory", this.lectureData, msg => {
+            axios.postStream("/api/activity/SaveActivityCategory", this.lectureData, msg => {
                 if (msg.success) {
                     this.$Message.success("已保存母讲座简介");
                 } else {
