@@ -274,12 +274,20 @@ export default {
         },
         getSubLectures (lectureId) {
             this.menuLoading = true;
+            this.$Spin.show();
             axios.post("/api/activity/GetActivityCategory", {id: lectureId}, msg => {
+                this.$Spin.hide();
                 this.menuLoading = false;
                 if (msg.success) {
                     this.lectureData = msg.data;
                     this.subLectureData = msg.activities;
                     this.getLectureSignUp(lectureId);
+                    // 设置当前选中的菜单项，注意在$nextTick中调用
+                    if (this.subLectureData.length) {
+                        this.$nextTick(() => {
+                            this.activeMenu = 0;
+                        })
+                    }
                 } else {
                     this.$Message.error(msg.msg);
                 }
