@@ -337,13 +337,12 @@ export default {
                     axios.post("/api/activity/RemoveActivity", {id: this.subLecture.id}, msg => {
                         if (msg.success) {
                             this.$Message.success("删除成功");
+                            this.activeMenu = 0;
                             this.getSubLectures(this.$route.query.id);
-                            this.$router.go(0)
                         } else {
                             this.$Message.error(msg.msg);
                         }
                     })
-                    // location.reload();
                 }
             })
         },
