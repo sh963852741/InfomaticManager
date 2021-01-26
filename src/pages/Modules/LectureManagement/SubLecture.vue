@@ -1,7 +1,7 @@
 <template>
     <i-row>
         <i-col span="4">
-            <i-menu :active-name="activeMenu" width="auto" style="z-index: 8;" @on-select="getSubLecture">
+            <i-menu ref="menu" :active-name="activeMenu" width="auto" style="z-index: 8;" @on-select="getSubLecture">
                 <i-menu-item name="New" style="border-bottom: 1px dashed #dcdee2;">
                     <Icon type="md-add-circle" color="#2d8cf0"/>
                     新建子讲座
@@ -254,8 +254,6 @@ export default {
                             this.showModal = false;
                             this.addSubLectureMode = false;
                             this.getSubLectures(this.$route.query.id);
-                            this.activeMenu = this.subLectureData[0].ID;
-                            this.getSubLecture(this.subLectureData[0].ID);
                         } else {
                             this.$Message.error(`${msg.msg}：${msg.errors}`);
                         }
@@ -284,8 +282,12 @@ export default {
                     this.getLectureSignUp(lectureId);
                     // 设置当前选中的菜单项，注意在$nextTick中调用
                     if (this.subLectureData.length) {
+                        let index = typeof this.activeMenu === "number" ? this.activeMenu : 0;
+                        this.activeMenu = index;
+                        this.getSubLecture(index);
+                        let menu = this.$refs["menu"];
                         this.$nextTick(() => {
-                            this.activeMenu = 0;
+                            menu.updateActiveName(index);
                         })
                     }
                 } else {
