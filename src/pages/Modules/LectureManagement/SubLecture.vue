@@ -82,7 +82,7 @@
                                     </i-row>
                                 </i-form>
                             </i-col>
-                            <i-col>
+                            <i-col style="width: 100px">
                                 <i-row>
                                     <p style="color: rgb(128, 134, 149);">状态</p>
                                     <p style="font-size: 24px;">{{subLecture.status}}</p>
@@ -147,6 +147,7 @@
 import QRCode from 'qrcodejs2'
 const app = require("@/config")
 const axios = require("axios");
+const urlPrefix = "http://localhost:8081/mob/";
 export default {
     data () {
         return {
@@ -232,11 +233,10 @@ export default {
     created () {},
     mounted () {
         this.qrcode = new QRCode('qrcode', {
-            width: 80, // 图像宽度
-            height: 80, // 图像高度
+            width: 100, // 图像宽度
+            height: 100, // 图像高度
             colorDark: "#000000", // 前景色
             colorLight: "#ffffff", // 背景色
-            typeNumber: 4,
             correctLevel: QRCode.CorrectLevel.H // 容错级别 容错级别有：（1）QRCode.CorrectLevel.L （2）QRCode.CorrectLevel.M （3）QRCode.CorrectLevel.Q （4）QRCode.CorrectLevel.H
         })
         this.getSubLectures(this.$route.query.id);
@@ -319,8 +319,8 @@ export default {
         },
         qrCode (url) {
             this.qrcode.clear(); // 清除二维码
-            this.qrcode.makeCode(url); // 生成另一个新的二维码
-            this.qrCodeUrl = url;
+            this.qrcode.makeCode(urlPrefix + url); // 生成另一个新的二维码
+            this.qrCodeUrl = urlPrefix + url;
         },
         getSubLecture (index) {
             if (typeof index === "number") {
@@ -338,7 +338,7 @@ export default {
                 this.subLecture.place = this.subLectureData[index].Address;
                 this.subLecture.status = this.subLectureData[index].Status;
 
-                this.qrCode(this.subLectureData[index].ID);
+                this.qrCode(`signIn/signIn?id=${this.subLectureData[index].ID}`);
 
                 this.getSubLectureSingIn(this.subLecture.id);
             } else if (index === "New") {
@@ -436,5 +436,6 @@ export default {
 }
 .url_content {
     white-space: normal;
+    word-break: break-all;
 }
 </style>
