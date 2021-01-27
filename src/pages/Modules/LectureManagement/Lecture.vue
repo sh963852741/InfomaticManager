@@ -62,11 +62,23 @@
                 </i-row>
                 <i-button type="primary" @click="getLecture()">搜索</i-button>
                 <i-button icon="ios-trash" @click="clearSearch()">清空条件</i-button>
+                <i-divider />
             </i-form>
-            <i-divider />
-            <i-row type="flex" justify="end" :gutter="16" style="margin-bottom: 8px;">
-                <i-col><i-button type="primary" icon="ios-cloud-upload-outline">导入列表</i-button></i-col>
-                <i-col><i-button type="primary" icon="ios-cloud-download-outline">导出列表</i-button></i-col>
+            <i-row type="flex" justify="space-between" :gutter="16" style="margin-bottom: 8px;">
+                <i-col>
+                    <i-form label-colon label-position="left" :label-width="130" inline>
+                        <i-form-item label="本学期起止时间">
+                            <i-date-picker v-model="termRange" type="daterange" placeholder="请输入学期起止时间"/>
+                        </i-form-item>
+                            <Button type="primary" @click="saveTerm">保存</Button>
+                    </i-form>
+                </i-col>
+                <i-col>
+                    <i-row>
+                        <i-button type="primary" icon="ios-cloud-upload-outline">导入列表</i-button>
+                        <i-button type="primary" icon="ios-cloud-download-outline">导出列表</i-button>
+                    </i-row>
+                </i-col>
             </i-row>
             <i-row>
                 <i-table :loading="tableLoading" stripe :columns="LecturesCol" :data="LectureData">
@@ -76,6 +88,9 @@
                         <a class="btn" href="javascript:;" @click="deleteLecture(row.ID)">[删除]</a>
                     </template>
                 </i-table>
+            </i-row>
+            <i-row style="margin-top: 8px">
+                <i-page :total="total" show-sizer show-total @on-change="getLecture($event, null)" @on-page-size-change="getLecture(null, $event)"/>
             </i-row>
         </i-card>
         <i-modal v-model="showModal">
@@ -133,6 +148,7 @@ export default {
         return {
             advanceSearch: false,
             autoCompleteOptions: [],
+            termRange: [],
             lecture: {
                 id: "",
                 title: "",
@@ -206,11 +222,15 @@ export default {
             LectureData: [],
             savingLecture: false,
             tableLoading: false,
-            searchCondition: {}
+            searchCondition: {},
+            page: 1,
+            pageSize: 10,
+            total: 0
         }
     },
     created () {
         this.getLecture();
+        this.getTerm();
     },
     methods: {
         timeFormatter (date, fmt = "yyyy-MM-dd hh:mm:ss") {
@@ -249,16 +269,19 @@ export default {
         toDetail (ID) {
             this.$router.push({name: "SubActivityManager", query: {id: ID}});
         },
-        getLecture () {
+        getLecture (targetPage, targetPageSize) {
+            let page = targetPage || this.page;
+            let pageSize = targetPageSize || this.pageSize;
             if (this.searchCondition.date && this.searchCondition.date[0]) {
                 this.searchCondition.beginOn = this.searchCondition.date[0];
                 this.searchCondition.endOn = this.searchCondition.date[1];
             }
             this.tableLoading = true;
-            axios.post("/api/activity/GetAcitvities", {...this.searchCondition}, msg => {
+            axios.post("/api/activity/GetAcitvities", {page, pageSize, ...this.searchCondition}, msg => {
                 this.tableLoading = false;
                 if (msg.success) {
                     this.LectureData = msg.data;
+                    this.total = msg.totalRow;
                 } else {
                     this.$Message.error(msg.msg);
                 }
@@ -301,6 +324,20 @@ export default {
         setKeyword: _.debounce(function () {
             // do nothing
         }, 500),
+        saveTerm () {
+            axios.post("/api/activity/SetTerm", {from: this.termRange[0], to: this.termRange[1]}, msg => {
+                if (msg.success) {
+                    this.$Message.success("保存成功");
+                } else {
+                    this.$Message.error(msg.msg);
+                }
+            })
+        },
+        getTerm () {
+            axios.post("/api/activity/GetTerm", {}, msg => {
+                this.termRange = [msg.from, msg.to];
+            })
+        },
         modifyLecture (src) {
             this.lecture.id = src.ID;
             this.lecture.title = src.Name;

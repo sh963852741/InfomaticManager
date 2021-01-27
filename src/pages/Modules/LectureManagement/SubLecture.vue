@@ -83,8 +83,18 @@
                                 </i-form>
                             </i-col>
                             <i-col>
-                                <p style="color: rgb(128, 134, 149);">状态</p>
-                                <p style="font-size: 24px;">{{subLecture.status}}</p>
+                                <i-row>
+                                    <p style="color: rgb(128, 134, 149);">状态</p>
+                                    <p style="font-size: 24px;">{{subLecture.status}}</p>
+                                </i-row>
+                                <i-row style="bottom: 0px; position: absolute;">
+                                    <Tooltip placement="left">
+                                        <div id="qrcode"></div>
+                                        <div slot="content" class="url_content">
+                                            {{qrCodeUrl}}
+                                        </div>
+                                    </Tooltip >
+                                </i-row>
                             </i-col>
                         </i-row>
                     </i-col>
@@ -134,6 +144,7 @@
 </template>
 
 <script>
+import QRCode from 'qrcodejs2'
 const app = require("@/config")
 const axios = require("axios");
 export default {
@@ -213,10 +224,21 @@ export default {
             lectureData: {},
             selected: "",
             activeMenu: "New",
-            signInData: []
+            signInData: [],
+            qrcode: {},
+            qrCodeUrl: ""
         }
     },
-    created () {
+    created () {},
+    mounted () {
+        this.qrcode = new QRCode('qrcode', {
+            width: 80, // 图像宽度
+            height: 80, // 图像高度
+            colorDark: "#000000", // 前景色
+            colorLight: "#ffffff", // 背景色
+            typeNumber: 4,
+            correctLevel: QRCode.CorrectLevel.H // 容错级别 容错级别有：（1）QRCode.CorrectLevel.L （2）QRCode.CorrectLevel.M （3）QRCode.CorrectLevel.Q （4）QRCode.CorrectLevel.H
+        })
         this.getSubLectures(this.$route.query.id);
     },
     methods: {
@@ -295,6 +317,11 @@ export default {
                 }
             })
         },
+        qrCode (url) {
+            this.qrcode.clear(); // 清除二维码
+            this.qrcode.makeCode(url); // 生成另一个新的二维码
+            this.qrCodeUrl = url;
+        },
         getSubLecture (index) {
             if (typeof index === "number") {
                 this.addSubLectureMode = false;
@@ -310,6 +337,8 @@ export default {
                 this.subLecture.availableCount = this.subLectureData[index].SignUpLimit;
                 this.subLecture.place = this.subLectureData[index].Address;
                 this.subLecture.status = this.subLectureData[index].Status;
+
+                this.qrCode(this.subLectureData[index].ID);
 
                 this.getSubLectureSingIn(this.subLecture.id);
             } else if (index === "New") {
@@ -404,5 +433,8 @@ export default {
     padding: 8px 24px;
     background: #fff;
     border-right: 1px solid #dcdee2;
+}
+.url_content {
+    white-space: normal;
 }
 </style>
