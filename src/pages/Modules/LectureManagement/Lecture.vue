@@ -68,9 +68,9 @@
                 <i-col>
                     <i-form label-colon label-position="left" :label-width="130" inline>
                         <i-form-item label="本学期起止时间">
-                            <i-date-picker v-model="termRange" type="daterange" placeholder="请输入学期起止时间"/>
+                            <i-date-picker v-model="termRange" separator=" 至 " type="daterange" placeholder="请输入学期起止时间"/>
                         </i-form-item>
-                            <Button type="primary" @click="saveTerm">保存</Button>
+                            <Button type="primary" @click="saveTerm" :loading="savingTerm">保存</Button>
                     </i-form>
                 </i-col>
                 <i-col>
@@ -225,7 +225,8 @@ export default {
             searchCondition: {},
             page: 1,
             pageSize: 10,
-            total: 0
+            total: 0,
+            savingTerm: false
         }
     },
     created () {
@@ -325,7 +326,9 @@ export default {
             // do nothing
         }, 500),
         saveTerm () {
+            this.savingTerm = true;
             axios.post("/api/activity/SetTerm", {from: this.termRange[0], to: this.termRange[1]}, msg => {
+                this.savingTerm = false;
                 if (msg.success) {
                     this.$Message.success("保存成功");
                 } else {
@@ -335,7 +338,7 @@ export default {
         },
         getTerm () {
             axios.post("/api/activity/GetTerm", {}, msg => {
-                this.termRange = [msg.from, msg.to];
+                this.termRange = [new Date(msg.from), new Date(msg.to)];
             })
         },
         modifyLecture (src) {

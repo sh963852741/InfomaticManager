@@ -122,6 +122,7 @@
                                 </template>
                             </Table>
                         </i-row>
+                        <i-page style="margin-top: 8px" :total="pageData.signUp.total" show-sizer show-total @on-change="getLectureSignUp(null, $event, null)" @on-page-size-change="getLectureSignUp(null, null, $event)"/>
                     </i-tab-pane>
                     <i-tab-pane label="签到管理" name="name3">
                         <i-row type="flex" justify="space-between">
@@ -135,6 +136,7 @@
                         <i-row class="table-margin">
                             <Table stripe :columns="signInCol" :data="signInData"></Table>
                         </i-row>
+                        <i-page style="margin-top: 8px" :total="pageData.signIn.total" show-sizer show-total @on-change="getSubLectureSingIn(null, $event, null)" @on-page-size-change="getSubLectureSingIn(null, null, $event)" />
                     </i-tab-pane>
                 </i-tabs>
             </i-card>
@@ -227,10 +229,25 @@ export default {
             activeMenu: "New",
             signInData: [],
             qrcode: {},
-            qrCodeUrl: ""
+            qrCodeUrl: "",
+            pageData: {
+                signUp: {
+                    total: 0,
+                    page: 1,
+                    pageSize: 10
+                },
+                signIn: {
+                    total: 0,
+                    page: 1,
+                    pageSize: 10
+                }
+            },
+            lectureId: ""
         }
     },
-    created () {},
+    created () {
+        this.lectureId = this.$route.query.id;
+    },
     mounted () {
         this.qrcode = new QRCode('qrcode', {
             width: 100, // 图像宽度
@@ -239,14 +256,20 @@ export default {
             colorLight: "#ffffff", // 背景色
             correctLevel: QRCode.CorrectLevel.H // 容错级别 容错级别有：（1）QRCode.CorrectLevel.L （2）QRCode.CorrectLevel.M （3）QRCode.CorrectLevel.Q （4）QRCode.CorrectLevel.H
         })
-        this.getSubLectures(this.$route.query.id);
+        this.getSubLectures(this.lectureId);
     },
     methods: {
         /* 获取报名状态 */
-        getLectureSignUp (lectureId) {
-            axios.post("/api/activity/GetSignUps", {id: lectureId}, msg => {
+        getLectureSignUp (lectureId, targetPage, targetPageSize) {
+            lectureId = lectureId || this.lectureId;
+            let page = targetPage || this.pageData.signIn.page;
+            let pageSize = targetPageSize || this.pageData.signIn.pageSize;
+            axios.post("/api/activity/GetSignUps", {id: lectureId, page, pageSize}, msg => {
                 if (msg.success) {
                     this.signUpData = msg.data;
+                    this.pageData.signUp.total = msg.totalRow;
+                    this.pageData.signUp.page = msg.page;
+                    this.pageData.signUp.pageSize = msg.pageSize;
                 } else {
                     this.$Message.error(msg.msg);
                 }
@@ -349,10 +372,16 @@ export default {
                 this.signUpData = [];
             }
         },
-        getSubLectureSingIn (subLectureId) {
-            axios.post("/api/activity/GetSignIns", {id: subLectureId}, msg => {
+        getSubLectureSingIn (subLectureId, targetPage, targetPageSize) {
+            subLectureId = subLectureId || this.subLecture.id;
+            let page = targetPage || this.pageData.signIn.page;
+            let pageSize = targetPageSize || this.pageData.signIn.pageSize;
+            axios.post("/api/activity/GetSignIns", {id: subLectureId, page, pageSize}, msg => {
                 if (msg.success) {
                     this.signInData = msg.data;
+                    this.pageData.signIn.total = msg.totalRow;
+                    this.pageData.signIn.page = msg.page;
+                    this.pageData.signIn.pageSize = msg.pageSize;
                 } else {
                     this.$Message.error(msg.msg);
                 }
