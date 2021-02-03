@@ -163,7 +163,7 @@
 import QRCode from 'qrcodejs2'
 const app = require("@/config")
 const axios = require("axios");
-const urlPrefix = "http://localhost:8081/mob/";
+const urlPrefix = window.location.protocol + "//" + window.location.host + "/mob/";
 export default {
     data () {
         return {
