@@ -129,13 +129,13 @@
                                 <Button class="outPutBtn" type="primary">导出报名信息</Button>
                             </i-col>
                         </i-row>
-                        <i-row class="table-margin">
+                        <div class="table-margin">
                             <Table stripe :columns="signUpCol" :data="signUpData">
                                 <template slot="State" slot-scope="{row}">
                                     {{signUpStateDic[row.State]}}
                                 </template>
                             </Table>
-                        </i-row>
+                        </div>
                         <i-page style="margin-top: 8px" :total="pageData.signUp.total" show-sizer show-total @on-change="getLectureSignUp(null, $event, null)" @on-page-size-change="getLectureSignUp(null, null, $event)"/>
                     </i-tab-pane>
                     <i-tab-pane label="签到管理" name="name3">
@@ -147,9 +147,9 @@
                                 <Button class="outPutBtn" type="primary">导出签到信息</Button>
                             </i-col>
                         </i-row>
-                        <i-row class="table-margin">
+                        <div class="table-margin">
                             <Table stripe :columns="signInCol" :data="signInData"></Table>
-                        </i-row>
+                        </div>
                         <i-page style="margin-top: 8px" :total="pageData.signIn.total" show-sizer show-total @on-change="getSubLectureSingIn(null, $event, null)" @on-page-size-change="getSubLectureSingIn(null, null, $event)" />
                     </i-tab-pane>
                 </i-tabs>

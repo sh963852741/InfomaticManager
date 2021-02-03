@@ -1,7 +1,7 @@
 <template>
-    <i-row>
+    <div>
         <i-card title="讲座列表">
-            <i-row>
+            <div>
                 <!-- <i-auto-complete icon="ios-search" @on-change="calcSearchOptions" @on-select="search">
                     <div class="demo-auto-complete-item" :key="item.title" v-for="item in autoCompleteOptions">
                         <div class="demo-auto-complete-group">
@@ -57,7 +57,7 @@
                     <i-button icon="ios-trash" @click="clearSearch()">清空条件</i-button>
                     <i-button type="text" @click="advanceSearch = !advanceSearch">{{advanceSearch ? "普通搜索" : "高级搜索"}}</i-button>
                 </i-form>
-            </i-row>
+            </div>
             <i-divider/>
             <i-row type="flex" justify="space-between" style="margin-bottom: 8px;">
                 <i-col>
@@ -76,23 +76,25 @@
                     </i-row>
                 </i-col>
                 <i-col>
-                    <i-row>
+                    <div>
                         <i-button type="primary" icon="ios-cloud-upload-outline">导入列表</i-button>
                         <i-button type="primary" icon="ios-cloud-download-outline">导出列表</i-button>
-                    </i-row>
+                    </div>
                 </i-col>
             </i-row>
-            <i-row>
-                <i-table :loading="tableLoading" @on-row-click="tableClickHandler" stripe :columns="LecturesCol" :data="LectureData" @on-sort-change="setTableSort">
-                    <template slot-scope="{row, index }" slot="ope">
-                        <Tooltip content="修改删除讲座与查看子讲座列表" :delay="500">
-                            <a class="btn" href="javascript:;" @click="tableClickHandler(row, index)">[详情]</a>
-                        </Tooltip>
-                        <Tooltip content="直接进入子讲座列表" :delay="500">
-                            <a class="btn" href="javascript:;" @click="toDetail(row.ID)">[子讲座]</a>
-                        </Tooltip>
-                    </template>
-                </i-table>
+            <i-row type="flex">
+                <i-col span="24">
+                    <i-table :loading="tableLoading" @on-row-click="tableClickHandler" stripe :columns="LecturesCol" :data="LectureData" @on-sort-change="setTableSort">
+                        <template slot-scope="{row, index }" slot="ope">
+                            <Tooltip content="修改删除讲座与查看子讲座列表" :delay="500">
+                                <a class="btn" href="javascript:;" @click="tableClickHandler(row, index)">[详情]</a>
+                            </Tooltip>
+                            <Tooltip content="直接进入子讲座列表" :delay="500">
+                                <a class="btn" href="javascript:;" @click="toDetail(row.ID)">[子讲座]</a>
+                            </Tooltip>
+                        </template>
+                    </i-table>
+                </i-col>
             </i-row>
             <i-row style="margin-top: 8px">
                 <i-page :total="total" show-sizer show-total @on-change="getLecture($event, null)" @on-page-size-change="getLecture(null, $event)"/>
@@ -218,7 +220,7 @@
                 </i-col>
             </i-row>
         </i-drawer>
-    </i-row>
+    </div>
 </template>
 
 <script>
