@@ -31,7 +31,7 @@
                         </i-row>
                         <i-row type="flex" justify="space-between">
                             <i-col span="18" id="sub-lecture-detail">
-                                <i-form ref="subLectureForm" label-position="left" :label-width="120" :label-colon="true" :modal="subLecture">
+                                <i-form ref="subLectureForm" label-position="left" :label-width="110" label-colon :modal="subLecture">
                                     <i-row type="flex" justify="space-between">
                                         <i-col span="11">
                                             <i-form-item label="汇报题目" prop="title">
@@ -40,6 +40,13 @@
                                         </i-col>
                                         <i-col span="11">
                                             <i-form-item label="讲座期数">
+                                                <template slot="label">
+                                                    讲座期数
+                                                    <Tooltip content="若为数字则子讲座按此排序">
+                                                        <Icon type="md-help-circle" color="#2db7f5" />
+                                                    </Tooltip>
+                                                    :
+                                                </template>
                                                 <i-input size="small" v-model="subLecture.count" />
                                             </i-form-item>
                                         </i-col>
@@ -54,12 +61,19 @@
                                             </i-form-item>
                                         </i-col>
                                         <i-col span="11">
-                                            <i-form-item label="汇报开始时间">
+                                            <i-form-item label="开始时间">
+                                                <template slot="label">
+                                                    开始时间
+                                                    <Tooltip content="此时间后可以签到">
+                                                        <Icon type="md-help-circle" color="#2db7f5" />
+                                                    </Tooltip>
+                                                    :
+                                                </template>
                                                 <i-date-picker style="width: 100%;" size="small" type="datetime" v-model="subLecture.beginOn" />
                                             </i-form-item>
                                         </i-col>
                                         <i-col span="11">
-                                            <i-form-item label="汇报结束时间">
+                                            <i-form-item label="结束时间">
                                                 <i-date-picker style="width: 100%;" size="small" type="datetime" v-model="subLecture.endOn" />
                                             </i-form-item>
                                         </i-col>
@@ -247,6 +261,7 @@ export default {
     },
     created () {
         this.lectureId = this.$route.query.id;
+        this.activeMenu = this.$route.query.index;
     },
     mounted () {
         this.qrcode = new QRCode('qrcode', {
@@ -318,7 +333,7 @@ export default {
         getSubLectures (lectureId) {
             this.menuLoading = true;
             this.$Spin.show();
-            axios.post("/api/activity/GetActivityCategory", {id: lectureId}, msg => {
+            axios.post("/api/activity/GetActivityCategory", {id: lectureId, order: "serial"}, msg => {
                 this.$Spin.hide();
                 this.menuLoading = false;
                 if (msg.success) {
