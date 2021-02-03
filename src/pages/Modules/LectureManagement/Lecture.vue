@@ -16,7 +16,7 @@
                 </i-auto-complete> -->
                 <i-row v-if="!advanceSearch" type="flex" :gutter="16">
                     <i-col span="8">
-                        <i-input search @on-search="getLecture" v-model="searchCondition.name" placeholder="搜索讲座题目"/>
+                        <i-input search @on-search="getLecture()" v-model="searchCondition.name" placeholder="搜索讲座题目"/>
                     </i-col>
                     <i-col>
                         <i-button type="text" @click="advanceSearch = !advanceSearch">{{advanceSearch ? "普通搜索" : "高级搜索"}}</i-button>

@@ -376,7 +376,7 @@ export default {
                 this.subLecture.place = this.subLectureData[index].Address;
                 this.subLecture.status = this.subLectureData[index].Status;
 
-                this.qrCode(`signIn/signIn?id=${this.subLectureData[index].ID}`);
+                this.qrCode(`iuc/signIn/signIn?id=${this.subLectureData[index].ID}`);
 
                 this.getSubLectureSingIn(this.subLecture.id);
             } else if (index === "New") {
