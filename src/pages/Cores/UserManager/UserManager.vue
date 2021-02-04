@@ -301,11 +301,11 @@ export default {
                     key: 'Mobile',
                     maxWidth: 180
                 },
-                // {
-                //     title: "是否绑定微信",
-                //     slot: "isBind",
-                //     maxWidth: 160
-                // },
+                {
+                    title: "是否绑定微信",
+                    slot: "isBind",
+                    maxWidth: 160
+                },
                 {
                     title: '操作',
                     key: 'ID',
