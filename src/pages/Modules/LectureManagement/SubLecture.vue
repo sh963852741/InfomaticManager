@@ -420,6 +420,7 @@ export default {
             })
         },
         timeToString (date) {
+            if (!date) return;
             // return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
             var y = date.getFullYear();
             var m = date.getMonth() + 1;

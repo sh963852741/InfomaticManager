@@ -43,7 +43,7 @@
                     <i-row type="flex" justify="space-between">
                         <i-col span="6">
                             <i-form-item label="开始时间">
-                                <i-date-picker style="width: 100%;" v-model="searchCondition.date" separator=" 至 " placeholder="请输入讲座开始时间范围"/>
+                                <i-date-picker style="width: 100%;" v-model="searchCondition.date" type="daterange" separator=" 至 " placeholder="请输入讲座开始时间范围"/>
                             </i-form-item>
                         </i-col>
                         <i-col span="6">
@@ -153,7 +153,7 @@
                 <Tooltip content="修改讲座信息" :delay="500">
                     <Button shape="circle" :loading="loadingDrawer" icon="md-create" @click="modifyLecture(drawerData.lecture)"></Button>
                 </Tooltip>
-                <Button shape="circle" :loading="loadingDrawer" type="error" icon="md-trash" @click="deleteLecture(drawerData.ID)" style="float: right"></Button>
+                <Button shape="circle" :loading="loadingDrawer" type="error" icon="md-trash" @click="deleteLecture(drawerData.lecture.ID)" style="float: right"></Button>
             </p>
             <i-row class="content">
                 <i-col span="12">
@@ -373,6 +373,7 @@ export default {
                     axios.post("/api/activity/RemoveActivityCategory", {id: ID}, msg => {
                         if (msg.success) {
                             this.$Message.success("删除成功");
+                            this.showDrawer = false;
                             this.getLecture();
                         } else {
                             this.$Message.error(msg.msg);
@@ -398,6 +399,9 @@ export default {
             if (this.searchCondition.date && this.searchCondition.date[0]) {
                 this.searchCondition.beginOn = this.searchCondition.date[0];
                 this.searchCondition.endOn = this.searchCondition.date[1];
+            } else {
+                this.searchCondition.beginOn = undefined;
+                this.searchCondition.endOn = undefined;
             }
             this.tableLoading = true;
             axios.post("/api/activity/GetAcitvities", {page, pageSize, ...this.searchCondition}, msg => {
