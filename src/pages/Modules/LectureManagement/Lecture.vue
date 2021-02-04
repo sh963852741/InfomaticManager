@@ -225,6 +225,7 @@
 
 <script>
 let _ = require("lodash");
+const app = require("@/config")
 const axios = require("axios");
 export default {
     data () {
@@ -321,6 +322,7 @@ export default {
         }
     },
     created () {
+        app.title = "讲座管理";
         this.getLecture();
         this.getTerm();
     },

@@ -23,6 +23,7 @@
                         <i-row style= "margin-bottom: 16px;" type="flex" justify="space-between" align="middle">
                             <i-col>
                                 <span class="head-title">子讲座信息：{{subLecture.title ? subLecture.title : "&lt;请输入讲座题目&gt;"}}</span>
+                                <i-button icon="ios-arrow-back" @click="$router.back()" style="margin-left: 16px">返回父讲座</i-button>
                             </i-col>
                             <i-col>
                                 <i-button icon="md-create" type="primary" :loading="savingSubLecture" @click="saveSubLecture">{{addSubLectureMode ? "确认新建" : "确认修改"}}</i-button>
@@ -260,6 +261,7 @@ export default {
         }
     },
     created () {
+        app.title = "子讲座列表";
         this.lectureId = this.$route.query.id;
         this.activeMenu = this.$route.query.index;
     },
