@@ -424,8 +424,8 @@ export default {
                     axios.postStream("/api/activity/SaveActivityCategory", {
                         ID: this.lecture.id,
                         Name: this.lecture.title,
-                        BeginOn: this.lecture.time[0],
-                        EndOn: this.lecture.time[1],
+                        BeginOn: this.timeFormatter(this.lecture.time[0]),
+                        EndOn: this.timeFormatter(this.lecture.time[1]),
                         SignUpBegin: this.timeFormatter(this.lecture.reservationTime[0]),
                         SignUpEnd: this.timeFormatter(this.lecture.reservationTime[1]),
                         Address: this.lecture.place,

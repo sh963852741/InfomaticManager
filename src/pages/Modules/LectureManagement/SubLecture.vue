@@ -6,10 +6,6 @@
                     <Icon type="md-add-circle" color="#2d8cf0"/>
                     新建子讲座
                 </i-menu-item>
-                <!-- <i-menu-item name="2">光的散射</i-menu-item>
-                <i-menu-item name="3">光的传播</i-menu-item>
-                <i-menu-item name="4">光的色散</i-menu-item>
-                <i-menu-item name="5">波粒二象性</i-menu-item> -->
                 <i-menu-item v-for="(tmp, index) in subLectureData" :key="tmp.ID" :name="index">{{tmp.Name}}</i-menu-item>
             </i-menu>
         </i-col>
