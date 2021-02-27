@@ -131,6 +131,11 @@
                                 <template slot="State" slot-scope="{row}">
                                     {{signUpStateDic[row.State]}}
                                 </template>
+                                <template slot-scope="{row, index }" slot="act">
+                                    <Tooltip content="修改删除讲座与查看子讲座列表" :delay="500">
+                                        <a class="btn" href="javascript:;" @click="cancelSignUp(row.ID)">[取消报名]</a>
+                                    </Tooltip>
+                                </template>
                             </Table>
                         </div>
                         <i-page style="margin-top: 8px" :total="pageData.signUp.total" show-sizer show-total @on-change="getLectureSignUp(null, $event, null)" @on-page-size-change="getLectureSignUp(null, null, $event)"/>
@@ -174,6 +179,10 @@ export default {
             },
             signUpCol: [
                 {
+                    title: '学号',
+                    key: 'Code'
+                },
+                {
                     title: '姓名',
                     key: 'RealName'
                 },
@@ -182,39 +191,39 @@ export default {
                     key: 'Mobile'
                 },
                 {
-                    title: '报名时间',
-                    key: 'SignUpOn'
-                },
-                {
-                    title: '邮箱',
-                    key: 'Email'
+                    title: '系别',
+                    key: 'Major'
                 },
                 {
                     title: '状态',
                     slot: 'State'
+                },
+                {
+                    title: '操作',
+                    slot: 'act'
                 }
             ],
             signUpData: [],
             signInCol: [
                 {
-                    title: '姓名',
-                    key: 'RealName'
-                },
-                {
                     title: '学号',
                     key: 'Code'
+                },
+                {
+                    title: '姓名',
+                    key: 'RealName'
                 },
                 {
                     title: '手机号',
                     key: 'Mobile'
                 },
                 {
-                    title: '邮箱',
-                    key: 'Email'
+                    title: '系别',
+                    key: 'Major'
                 },
                 {
-                    title: '签到时间',
-                    key: 'SignInOn'
+                    title: '状态',
+                    slot: 'State'
                 }
             ],
             app,
@@ -454,6 +463,15 @@ export default {
             }
             str = str + '';
             return str;
+        },
+        cancelSignUp (id) {
+            this.$Modal.confirm({
+                title: "确认删除",
+                content: "确实要取消该学生的报名吗？此操作不可恢复。",
+                onOk: () => {
+                    ;
+                }
+            })
         }
     }
 }
