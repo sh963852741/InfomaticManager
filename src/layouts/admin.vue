@@ -42,7 +42,7 @@
                         </i-col> -->
                         <i-col span="1">
                             <!-- <Icon :style="[{margin: '0 5px'},{cursor: 'pointer'}]" @click="$Message.info('功能开发中，敬请期待');" type="md-notifications-outline" size="24"></Icon> -->
-                            <Notices :notices="notices" @clear="clearNotice" />
+                            <Notices :notices="notices" @clear="clearNotice" style="display: none"/>
                         </i-col>
                         <i-col span="4">
                             <Dropdown trigger="click">
